@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+/**
+ *湘大校内XTU免费无线账号登陆器(PHP 版)
+ */
+
+$data = '';
+$url = 'http://192.168.252.246/';
+$password = 'xtu2013';
+$postData = array(
+    'DDDDD' => '',
+    'upass' => $password,
+    '0MKKey' => '%B5%C7%C2%BC+Login'
+);
+
+for (; ;) {
+    for ($i = 1; $i <= 12; $i++) {
+        $account = 'ies' . ($i < 10 ? '0' . $i : $i);
+        echo '尝试 ' . $account;
+
+        $postData['DDDDD'] = $account;
+        $data = do_post($url, $postData);
+        if (!strpos($data, 'Msg=01')) {
+            exit(' ---> 登陆成功!');
+        }
+//        echo "\n------------------------\n";
+//        echo $data;
+//        sleep(10);
+        echo " ---> 失败\n";
+        echo "------------------------\n";
+    }
+}
+function do_post($url, $data)
+{
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $html = curl_exec($ch);
+
+    curl_close($ch);
+    $data = iconv('gbk', 'utf-8', $html);
+    return $data;
+}
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">神沫天气</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_add_city">添加城市</string>
+    <string name="title_add_city">添加城市</string>
+    <string name="hint_input_city">输入城市名</string>
+    <string name="empty_city">请输入城市名称</string>
+    <string name="add_city_success">添加城市成功</string>
+    <string name="add_city_fail">添加城市失败</string>
+    <string name="delete_city_fail">删除城市成功</string>
+
+</resources>

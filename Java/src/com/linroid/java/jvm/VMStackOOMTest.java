@@ -1,7 +1,7 @@
 package com.linroid.java.jvm;
 
 /**
- * VM option: -Xss 2M
+ * VM option: -Xss2M
  * Created by linroid on 4/13/15.
  */
 public class VMStackOOMTest {

@@ -7,7 +7,7 @@ import java.util.List;
  * VM option: -Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError
  * Created by linroid on 4/13/15.
  */
-public class HeapOOM {
+public class HeapOOMTest {
     static class OOMObject {
 
     }

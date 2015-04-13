@@ -3,7 +3,7 @@ package com.linroid.java.jvm;
 /**
  * Created by linroid on 4/13/15.
  */
-public class JavaVMStackOOM {
+public class VMStackSOFTest {
     private void dontStop(){
         for(;;){
 
@@ -19,7 +19,7 @@ public class JavaVMStackOOM {
     }
 
     public static void main(String[] args) {
-        JavaVMStackOOM oom = new JavaVMStackOOM();
+        VMStackSOFTest oom = new VMStackSOFTest();
         oom.stackLeakByThread();
     }
 }

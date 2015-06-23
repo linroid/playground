@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "LRDHypnosisView.h"
+//#import "UI"
 
 @interface AppDelegate ()
 
@@ -17,6 +19,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    CGRect windowFrame = [[UIScreen mainScreen] bounds];
+    self.window = [[UIWindow alloc] initWithFrame: windowFrame];
+    
+    CGRect firstFrame = CGRectMake(160, 240, 100, 150);
+    LRDHypnosisView *firstView = [[LRDHypnosisView alloc] initWithFrame:firstFrame];
+    firstView.backgroundColor = [UIColor redColor];
+    [self.window addSubview:firstView];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
     return YES;
 }
 

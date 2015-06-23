@@ -9,8 +9,6 @@
 #import "LRDHypnosisView.h"
 @interface LRDHypnosisView()
 
-@property (strong, nonatomic) UIColor *circleColor;
-
 @end
 
 

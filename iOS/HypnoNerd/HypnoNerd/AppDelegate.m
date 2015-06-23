@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "LRDHypnosisViewController.h"
+#import "LRDReminderViewController.h"
+#import "QuizViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +20,29 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    self.window = [[UIWindow alloc] initWithFrame:screenRect];
+    
+    LRDHypnosisViewController *hvc = [[LRDHypnosisViewController alloc] init];
+    self.window.rootViewController = hvc;
+    
+    NSBundle *appBundle = [NSBundle mainBundle];
+    LRDReminderViewController *rvc = [[LRDReminderViewController alloc] initWithNibName:@"LRDReminderViewController"
+                                                                                bundle:appBundle];
+    
+    QuizViewController *qvc = [[QuizViewController alloc] init];
+    
+    UITabBarController *tabBar = [[UITabBarController alloc] init];
+    tabBar.viewControllers = @[hvc, rvc, qvc];
+    
+    
+    self.window.rootViewController = tabBar;
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+        [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
+    }
     return YES;
 }
 

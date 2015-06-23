@@ -44,8 +44,10 @@
         self.answers = @[@"Grapes",
                      @"14",
                      @"Montpelier"];
+        self.tabBarItem.title = @"Quiz";
     }
     return self;
 }
+
 
 @end

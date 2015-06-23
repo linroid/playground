@@ -35,6 +35,8 @@
     //绘制路径
     [path stroke];
     
+    UIImage *logoImage = [UIImage imageNamed:@"logo.png"];
+    [logoImage drawInRect:rect];
 }
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];

@@ -22,15 +22,26 @@
     CGRect windowFrame = [[UIScreen mainScreen] bounds];
     self.window = [[UIWindow alloc] initWithFrame: windowFrame];
     
-    CGRect firstFrame = self.window.bounds;
-    LRDHypnosisView *firstView = [[LRDHypnosisView alloc] initWithFrame:firstFrame];
+    CGRect screenRect = self.window.bounds;
+    
+    CGRect bigRect = screenRect;
+    bigRect.size.width *= 2.0;
+//    bigRect.size.height *= 2.0;
+    
+    UIScrollView * scrollView = [[UIScrollView alloc] initWithFrame:screenRect];
+    [scrollView setPagingEnabled:YES];
+    scrollView.contentSize = bigRect.size;
+    [self.window addSubview:scrollView];
+    
+    LRDHypnosisView *firstView = [[LRDHypnosisView alloc] initWithFrame:screenRect];
 //    firstView.backgroundColor = [UIColor redColor];
-    [self.window addSubview:firstView];
+    [scrollView addSubview:firstView];
     
 //    CGRect secondFrame = CGRectMake(20, 30, 50, 50);
-//    LRDHypnosisView *secondView = [[LRDHypnosisView alloc] initWithFrame:secondFrame];
+    screenRect.origin.x = screenRect.size.width;
+    LRDHypnosisView *secondView = [[LRDHypnosisView alloc] initWithFrame:screenRect];
 //    secondView.backgroundColor = [UIColor blackColor];
-//    [firstView addSubview:secondView];
+    [scrollView addSubview:secondView];
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];

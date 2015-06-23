@@ -10,6 +10,4 @@
 
 @interface LRDHypnosisView : UIView
 
-
-
 @end

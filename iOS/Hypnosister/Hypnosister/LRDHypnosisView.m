@@ -7,10 +7,17 @@
 //
 
 #import "LRDHypnosisView.h"
+@interface LRDHypnosisView()
+
+@property (strong, nonatomic) UIColor *circleColor;
+
+@end
+
 
 @implementation LRDHypnosisView
 
 - (void)drawRect:(CGRect)rect {
+    NSLog(@"drawRect");
     CGRect bounds = self.bounds;
     CGPoint center;
     center.x = (bounds.origin.x + bounds.size.width) / 2;
@@ -31,7 +38,7 @@
     }
     
     path.lineWidth = 10;
-    [[UIColor lightGrayColor] setStroke];
+    [self.circleColor setStroke];
     //绘制路径
     [path stroke];
     
@@ -76,10 +83,30 @@
     CGContextRestoreGState(currentContext);
 
 }
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    NSLog(@"%@ was touched\n", self);
+    self.circleColor = [self generateRandomColor];
+    NSLog(@"circle color :%@", self.circleColor);
+}
+- (void) setCircleColor:(UIColor *)circleColor{
+    _circleColor = circleColor;
+    [self setNeedsDisplay];
+}
+- (UIColor *) generateRandomColor {
+    float red = (arc4random()%255) / 255.0;
+    float green = (arc4random()%255) / 255.0;
+    float blue = (arc4random()%255) / 255.0;
+    return [UIColor colorWithRed:red
+                           green:green
+                            blue:blue
+                           alpha:1.0];
+}
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if(self) {
         self.backgroundColor = [UIColor clearColor];
+        self.circleColor = [UIColor lightGrayColor];
     }
     return self;
 }

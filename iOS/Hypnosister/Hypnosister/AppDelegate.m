@@ -26,6 +26,12 @@
     LRDHypnosisView *firstView = [[LRDHypnosisView alloc] initWithFrame:firstFrame];
     firstView.backgroundColor = [UIColor redColor];
     [self.window addSubview:firstView];
+    
+    CGRect secondFrame = CGRectMake(20, 30, 50, 50);
+    LRDHypnosisView *secondView = [[LRDHypnosisView alloc] initWithFrame:secondFrame];
+    secondView.backgroundColor = [UIColor blackColor];
+    [firstView addSubview:secondView];
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;

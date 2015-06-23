@@ -35,8 +35,14 @@
     //绘制路径
     [path stroke];
     
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(currentContext);
+    CGContextSetShadow(currentContext, CGSizeMake(4, 8), 3);
+    
     UIImage *logoImage = [UIImage imageNamed:@"logo.png"];
     [logoImage drawInRect:rect];
+    
+    CGContextRestoreGState(currentContext);
 }
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];

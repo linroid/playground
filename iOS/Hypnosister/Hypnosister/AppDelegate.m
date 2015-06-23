@@ -22,15 +22,15 @@
     CGRect windowFrame = [[UIScreen mainScreen] bounds];
     self.window = [[UIWindow alloc] initWithFrame: windowFrame];
     
-    CGRect firstFrame = CGRectMake(160, 240, 100, 150);
+    CGRect firstFrame = self.window.bounds;
     LRDHypnosisView *firstView = [[LRDHypnosisView alloc] initWithFrame:firstFrame];
-    firstView.backgroundColor = [UIColor redColor];
+//    firstView.backgroundColor = [UIColor redColor];
     [self.window addSubview:firstView];
     
-    CGRect secondFrame = CGRectMake(20, 30, 50, 50);
-    LRDHypnosisView *secondView = [[LRDHypnosisView alloc] initWithFrame:secondFrame];
-    secondView.backgroundColor = [UIColor blackColor];
-    [firstView addSubview:secondView];
+//    CGRect secondFrame = CGRectMake(20, 30, 50, 50);
+//    LRDHypnosisView *secondView = [[LRDHypnosisView alloc] initWithFrame:secondFrame];
+//    secondView.backgroundColor = [UIColor blackColor];
+//    [firstView addSubview:secondView];
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];

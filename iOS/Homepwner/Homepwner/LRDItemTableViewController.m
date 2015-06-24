@@ -17,7 +17,7 @@
 - (instancetype) init{
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<50; i++) {
             [[LRDItemStore sharedStore] createItem];
         }
     }
@@ -29,7 +29,9 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"UITableViewCell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"cheapCell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"expensiveCell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"endCell"];
     self.tableView.delegate = self;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -46,22 +48,60 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[[LRDItemStore sharedStore] allItems] count];
+    if(section == 0) {
+        return 20;
+    }else if(section == 1) {
+        return [[[LRDItemStore sharedStore] allItems] count] - 20;
+    }else {
+        return 1;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: @"UITableViewCell"
-                                                            forIndexPath: indexPath];
-    NSArray *items = [[LRDItemStore sharedStore] allItems];
-    LRDItem *item = items[indexPath.row];
-    cell.textLabel.text = item.itemName;
-    UIImage *image = [UIImage imageNamed:@"AppIcon"];
-    cell.imageView.image = image;
+    UITableViewCell *cell;
+    NSInteger position;
+    if(indexPath.section == 0){
+        cell = [tableView dequeueReusableCellWithIdentifier: @"expensiveCell"
+                                               forIndexPath: indexPath];
+        position = indexPath.row;
+    }else if(indexPath.section == 1){
+        cell = [tableView dequeueReusableCellWithIdentifier: @"cheapCell"
+                                               forIndexPath: indexPath];
+        position = indexPath.row + 20;
+    }else {
+        cell = [tableView dequeueReusableCellWithIdentifier: @"endCell"
+                                               forIndexPath:indexPath];
+    }
+    
+    if(indexPath.section == 0) {
+        cell.backgroundColor = [UIColor redColor];
+    }else if(indexPath.section == 1){
+        cell.backgroundColor = [UIColor clearColor];
+    }else {
+        cell.backgroundColor = [UIColor clearColor];
+    }
+    if(indexPath.section != 2){
+        NSArray *items = [[LRDItemStore sharedStore] allItems];
+        LRDItem *item = items[indexPath.row];
+        cell.textLabel.text = [NSString stringWithFormat: @"%d) [%d %d] %@", position, indexPath.section, indexPath.row, item.itemName ];
+        UIImage *image = [UIImage imageNamed:@"AppIcon"];
+        cell.imageView.image = image;
+    } else {
+        cell.textLabel.text = @"No mode items";
+    }
+    
     return cell;
+}
+- (CGFloat) tableView: (UITableView *) tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section != 2){
+        return 66.0;
+    }else {
+        return 44.0;
+    }
 }
 
 /*

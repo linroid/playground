@@ -51,34 +51,34 @@
     
     CGContextRestoreGState(currentContext);
     
-    CGContextSaveGState(currentContext);
-    UIBezierPath *trianglePath = [[UIBezierPath alloc] init];
-    
-    //设置剪切路径
-    int size = 190;
-    [trianglePath moveToPoint:CGPointMake(center.x, center.y-size)];//top
-    [trianglePath addLineToPoint:CGPointMake(center.x+size, center.y+size)];//right
-    [trianglePath addLineToPoint:CGPointMake(center.x-size, center.y+size)];//left
-    [trianglePath addLineToPoint:CGPointMake(center.x, center.y-size)];//top
-    [trianglePath addClip];
-    
-    //设置渐变色
-    CGFloat locations[2] = {0.0, 1.0};
-    CGFloat components[8] = {
-        1.0, 1.0, 0.0, 1.0, //yellow
-        0.0, 1.0, 0.0, 1.0 //green
-    };
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    CGGradientRef gradient = CGGradientCreateWithColorComponents(colorspace, components, locations,
-                                                                 kCGGradientDrawsBeforeStartLocation|kCGGradientDrawsAfterEndLocation);
-    CGPoint startPoint = CGPointMake(center.x, center.y-size);
-    CGPoint endPoint = CGPointMake(center.x, center.y+size);
-    CGContextDrawLinearGradient(currentContext, gradient
-                                , startPoint, endPoint, 0);
-    CGGradientRelease(gradient);
-    CGColorSpaceRelease(colorspace);
-    
-    CGContextRestoreGState(currentContext);
+//    CGContextSaveGState(currentContext);
+//    UIBezierPath *trianglePath = [[UIBezierPath alloc] init];
+//    
+//    //设置剪切路径
+//    int size = 190;
+//    [trianglePath moveToPoint:CGPointMake(center.x, center.y-size)];//top
+//    [trianglePath addLineToPoint:CGPointMake(center.x+size, center.y+size)];//right
+//    [trianglePath addLineToPoint:CGPointMake(center.x-size, center.y+size)];//left
+//    [trianglePath addLineToPoint:CGPointMake(center.x, center.y-size)];//top
+//    [trianglePath addClip];
+//    
+//    //设置渐变色
+//    CGFloat locations[2] = {0.0, 1.0};
+//    CGFloat components[8] = {
+//        1.0, 1.0, 0.0, 1.0, //yellow
+//        0.0, 1.0, 0.0, 1.0 //green
+//    };
+//    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+//    CGGradientRef gradient = CGGradientCreateWithColorComponents(colorspace, components, locations,
+//                                                                 kCGGradientDrawsBeforeStartLocation|kCGGradientDrawsAfterEndLocation);
+//    CGPoint startPoint = CGPointMake(center.x, center.y-size);
+//    CGPoint endPoint = CGPointMake(center.x, center.y+size);
+//    CGContextDrawLinearGradient(currentContext, gradient
+//                                , startPoint, endPoint, 0);
+//    CGGradientRelease(gradient);
+//    CGColorSpaceRelease(colorspace);
+//    
+//    CGContextRestoreGState(currentContext);
 
 }
 

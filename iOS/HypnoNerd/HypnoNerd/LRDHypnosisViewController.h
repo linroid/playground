@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LRDHypnosisViewController : UIViewController
+@interface LRDHypnosisViewController : UIViewController<UITextFieldDelegate>
 
 @end

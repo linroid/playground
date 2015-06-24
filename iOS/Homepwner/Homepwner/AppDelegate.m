@@ -1,49 +1,27 @@
 //
 //  AppDelegate.m
-//  HypnoNerd
+//  Homepwner
 //
-//  Created by 张林 on 15/6/23.
+//  Created by 张林 on 15/6/24.
 //  Copyright (c) 2015年 张林. All rights reserved.
 //
 
 #import "AppDelegate.h"
-#import "LRDHypnosisViewController.h"
-#import "LRDReminderViewController.h"
-#import "QuizViewController.h"
+#import "DetailViewController.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <UISplitViewControllerDelegate>
 
 @end
 
-@implementation AppDelegate <UIScrollViewDelegate>
+@implementation AppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    self.window = [[UIWindow alloc] initWithFrame:screenRect];
-    
-    LRDHypnosisViewController *hvc = [[LRDHypnosisViewController alloc] init];
-    self.window.rootViewController = hvc;
-    
-    NSBundle *appBundle = [NSBundle mainBundle];
-    
-    LRDReminderViewController *rvc = [[LRDReminderViewController alloc] initWithNibName:@"LRDReminderViewController"
-                                                                                bundle:appBundle];
-    
-    QuizViewController *qvc = [[QuizViewController alloc] init];
-    
-    UITabBarController *tabBar = [[UITabBarController alloc] init];
-    tabBar.viewControllers = @[hvc, rvc, qvc];
-    
-    
-    self.window.rootViewController = tabBar;
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-    
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
-        [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
-    }
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
+    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
+    splitViewController.delegate = self;
     return YES;
 }
 
@@ -67,6 +45,17 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+#pragma mark - Split view
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
+    if ([secondaryViewController isKindOfClass:[UINavigationController class]] && [[(UINavigationController *)secondaryViewController topViewController] isKindOfClass:[DetailViewController class]] && ([(DetailViewController *)[(UINavigationController *)secondaryViewController topViewController] detailItem] == nil)) {
+        // Return YES to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 @end

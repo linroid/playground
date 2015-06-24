@@ -41,4 +41,15 @@
     [_privateItems addObject:item];
     return item;
 }
+
+- (void) removeItem: (LRDItem *) item {
+    [self.privateItems removeObjectIdenticalTo: item];
+}
+
+- (void) moveItemAtIndex: (NSUInteger) fromIndex
+                 toIndex: (NSUInteger) toIndex {
+    LRDItem *item = self.privateItems[fromIndex];
+    [self.privateItems removeObjectIdenticalTo:item];
+    [self.privateItems insertObject:item atIndex: toIndex];
+}
 @end

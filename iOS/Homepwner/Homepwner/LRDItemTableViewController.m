@@ -10,14 +10,20 @@
 
 @interface LRDItemTableViewController () <UITableViewDelegate>
 
+@property (nonatomic, strong) IBOutlet UIView *headerView;
+
 @end
 
 @implementation LRDItemTableViewController
 
+- (void) loadView {
+    [super loadView];
+//    self.navigationController
+}
 - (instancetype) init{
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
-        for (int i=0; i<50; i++) {
+        for (int i=0; i<8; i++) {
             [[LRDItemStore sharedStore] createItem];
         }
     }
@@ -29,10 +35,16 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"cheapCell"];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"expensiveCell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"tableCell"];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"endCell"];
     self.tableView.delegate = self;
+    UIView *header = self.headerView;
+    [self.tableView setTableHeaderView:header];
+    
+    
+    UILabel *footer = [[UILabel alloc] init];
+    footer.text = @"No mode items";
+    [self.tableView setTableFooterView: footer];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -45,17 +57,51 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction) addNewItem: (id) sender {
+    [[LRDItemStore sharedStore] createItem];
+    NSInteger lastRow = [self.tableView numberOfRowsInSection: 0];
+    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow: lastRow inSection:0];
+    
+    [self.tableView insertRowsAtIndexPaths: @[lastIndexPath] withRowAnimation:UITableViewRowAnimationTop];
+}
+- (IBAction)toggleEditingMode:(id)sender {
+    if(self.tableView.isEditing) {
+        [sender setTitle: @"Edit" forState: UIControlStateNormal];
+        [self setEditing:NO animated:YES];
+    } else {
+        [sender setTitle: @"Done" forState:UIControlStateNormal];
+        [self setEditing:YES animated:YES];
+    }
+}
+
+- (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        NSArray * items = [[LRDItemStore sharedStore] allItems];
+        [[LRDItemStore sharedStore] removeItem: items[indexPath.row]];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation: UITableViewRowAnimationBottom];
+    }
+}
+
+- (void) tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
+    [[LRDItemStore sharedStore] moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
+}
+- (UIView *) headerView {
+    if(_headerView == nil) {
+        [[NSBundle mainBundle] loadNibNamed:@"HeaderView" owner:self options: nil];
+    }
+    return _headerView;
+}
+
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if(section == 0) {
-        return 20;
-    }else if(section == 1) {
-        return [[[LRDItemStore sharedStore] allItems] count] - 20;
+        return [[[LRDItemStore sharedStore] allItems] count];
     }else {
         return 1;
     }
@@ -65,26 +111,20 @@
     UITableViewCell *cell;
     NSInteger position;
     if(indexPath.section == 0){
-        cell = [tableView dequeueReusableCellWithIdentifier: @"expensiveCell"
+        cell = [tableView dequeueReusableCellWithIdentifier: @"tableCell"
                                                forIndexPath: indexPath];
         position = indexPath.row;
-    }else if(indexPath.section == 1){
-        cell = [tableView dequeueReusableCellWithIdentifier: @"cheapCell"
-                                               forIndexPath: indexPath];
-        position = indexPath.row + 20;
     }else {
         cell = [tableView dequeueReusableCellWithIdentifier: @"endCell"
                                                forIndexPath:indexPath];
     }
     
     if(indexPath.section == 0) {
-        cell.backgroundColor = [UIColor redColor];
-    }else if(indexPath.section == 1){
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = [UIColor whiteColor];
     }else {
         cell.backgroundColor = [UIColor clearColor];
     }
-    if(indexPath.section != 2){
+    if(indexPath.section == 0){
         NSArray *items = [[LRDItemStore sharedStore] allItems];
         LRDItem *item = items[indexPath.row];
         cell.textLabel.text = [NSString stringWithFormat: @"%d) [%d %d] %@", position, indexPath.section, indexPath.row, item.itemName ];
@@ -97,12 +137,14 @@
     return cell;
 }
 - (CGFloat) tableView: (UITableView *) tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(indexPath.section != 2){
+    if(indexPath.section == 0){
         return 66.0;
     }else {
         return 44.0;
     }
 }
+
+
 
 /*
 // Override to support conditional editing of the table view.

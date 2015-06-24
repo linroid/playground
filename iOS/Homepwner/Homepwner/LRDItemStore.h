@@ -16,4 +16,7 @@
 + (instancetype) sharedStore;
 - (NSArray *) allItems;
 - (LRDItem *) createItem;
+- (void) removeItem: (LRDItem *) item;
+- (void) moveItemAtIndex: (NSUInteger) fromIndex
+                 toIndex: (NSUInteger) toIndex;
 @end

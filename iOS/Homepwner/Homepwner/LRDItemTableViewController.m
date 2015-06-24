@@ -41,7 +41,6 @@
     UIView *header = self.headerView;
     [self.tableView setTableHeaderView:header];
     
-    
     UILabel *footer = [[UILabel alloc] init];
     footer.text = @"No mode items";
     [self.tableView setTableFooterView: footer];
@@ -50,6 +49,9 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Remove";
 }
 
 - (void)didReceiveMemoryWarning {
@@ -136,6 +138,7 @@
     
     return cell;
 }
+
 - (CGFloat) tableView: (UITableView *) tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0){
         return 66.0;
@@ -144,7 +147,19 @@
     }
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section != 0){
+        return NO;
+    }
+    return YES;
+}
 
+- (BOOL) tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section != 0){
+        return NO;
+    }
+    return YES;
+}
 
 /*
 // Override to support conditional editing of the table view.

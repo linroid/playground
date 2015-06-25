@@ -37,7 +37,8 @@
 - (LRDItem *) createItem{
     LRDItem *item = [[LRDItem alloc] init];
     item.itemName = [NSString stringWithFormat: @"hello %d", arc4random()];
-
+    item.serialNumber = [NSString stringWithFormat: @"%d", arc4random()];
+    item.valueInDollars = arc4random() % 1000;
     [_privateItems addObject:item];
     return item;
 }

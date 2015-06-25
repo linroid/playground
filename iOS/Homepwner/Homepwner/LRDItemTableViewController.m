@@ -7,6 +7,7 @@
 //
 
 #import "LRDItemTableViewController.h"
+#import "LRDDetailViewController.h"
 
 @interface LRDItemTableViewController () <UITableViewDelegate>
 
@@ -94,7 +95,6 @@
     return _headerView;
 }
 
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -137,6 +137,13 @@
     }
     
     return cell;
+}
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] init];
+    NSArray *items = [[LRDItemStore sharedStore] allItems];
+    detailController.item = items[indexPath.row];
+    [self.navigationController pushViewController:detailController animated:YES];
 }
 
 - (CGFloat) tableView: (UITableView *) tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

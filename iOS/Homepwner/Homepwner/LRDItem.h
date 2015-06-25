@@ -11,4 +11,8 @@
 @interface LRDItem : NSObject
 
 @property (nonatomic, readwrite) NSString *itemName;
+@property (nonatomic, readwrite) NSString *serialNumber;
+@property (nonatomic, readwrite) int valueInDollars;
+@property (nonatomic, readonly) NSDate *dateCreated;
+
 @end

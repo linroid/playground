@@ -19,8 +19,11 @@
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     self.window = [[UIWindow alloc] initWithFrame:screenRect];
     
-    LRDItemTableViewController *controller = [[LRDItemTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.window.rootViewController = controller;
+    LRDItemTableViewController *itemTableController = [[LRDItemTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:itemTableController];
+    
+    self.window.rootViewController = navController;
     self.window.backgroundColor = [UIColor clearColor];
     [self.window makeKeyAndVisible];
     return YES;

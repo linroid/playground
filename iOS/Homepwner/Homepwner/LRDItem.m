@@ -10,4 +10,8 @@
 
 @implementation LRDItem
 
+- (void) setItemName:(NSString *)itemName {
+    _itemName = itemName;
+    _dateCreated = [[NSDate alloc] init];
+}
 @end

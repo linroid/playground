@@ -20,7 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *changeDateButton;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
-- (IBAction)backgroundTapped:(id)sender;
+
 @end
 
 @implementation LRDDetailViewController
@@ -48,11 +48,7 @@
     [super loadView];
     NSLog(@"loadView");
 }
-- (IBAction) changeDate:(id) sender {
-    LRDChangeDateViewController *changeDateController = [[LRDChangeDateViewController alloc] init];
-    changeDateController.item = self.item;
-    [self.navigationController pushViewController:changeDateController animated:YES];
-}
+
 - (void) saveChange:(id) sender{
     [self.view endEditing:NO];
     
@@ -79,19 +75,7 @@
         self.imageView.image = image;
     }
 }
-- (IBAction)takePicture:(id)sender {
-    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-    
-    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        NSLog(@"有相机📷");
-    }else {
-        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    }
-    imagePicker.delegate = self;
-    [self presentViewController:imagePicker animated:YES completion: nil];
-    
-}
+
 - (void)viewWillDisappear:(BOOL)animated {
     NSLog(@"viewWillDisappear");
     [self saveChange:nil];
@@ -105,6 +89,49 @@
     [[LRDImageStore sharedStore] setImage:image forKey:self.item.imageKey];
 }
 
+
+#pragma mark - Actions
+
+- (IBAction) changeDate:(id) sender {
+    LRDChangeDateViewController *changeDateController = [[LRDChangeDateViewController alloc] init];
+    changeDateController.item = self.item;
+    [self.navigationController pushViewController:changeDateController animated:YES];
+}
+
+- (IBAction)takePicture:(id)sender {
+    CGRect rootFrame =  self.view.bounds;
+    CGRect frame = CGRectMake(rootFrame.origin.x+rootFrame.size.width/2 - 60,
+                              rootFrame.origin.y+rootFrame.size.height/2 - 60,
+                              60.0,
+                              60.0);
+    
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        NSLog(@"有相机📷");
+        UILabel *label = [[UILabel alloc] initWithFrame:frame];
+        label.text = @"+";
+        imagePicker.allowsEditing = YES;
+        imagePicker.cameraOverlayView = label;
+    }else {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    }
+    imagePicker.delegate = self;
+    [self presentViewController:imagePicker animated:YES completion: nil];
+    
+}
+
+- (IBAction)deletePicture:(id)sender {
+    
+    self.imageView.image = nil;
+    [[LRDImageStore sharedStore] deleteImageForKey:self.item.imageKey];
+}
+
+- (IBAction)backgroundTapped:(id)sender {
+    [self.view endEditing:NO];
+    NSLog(@"backgroundTapped");
+}
+
 /*
 #pragma mark - Navigation
 
@@ -115,8 +142,5 @@
 }
 */
 
-- (IBAction)backgroundTapped:(id)sender {
-    [self.view endEditing:NO];
-    NSLog(@"backgroundTapped");
-}
+
 @end

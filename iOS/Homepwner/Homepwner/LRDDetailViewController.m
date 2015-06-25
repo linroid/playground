@@ -7,7 +7,7 @@
 //
 
 #import "LRDDetailViewController.h"
-#import "LRDItem.h";
+#import "LRDItem.h"
 
 @interface LRDDetailViewController ()
 
@@ -21,22 +21,41 @@
 
 @implementation LRDDetailViewController
 
+- (void)setItem:(LRDItem *)item {
+    _item = item;
+    self.navigationItem.title = item.itemName;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    NSLog(@"viewDidLoad");
 }
 
+- (void)loadView {
+    [super loadView];
+    NSLog(@"loadView");
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"viewWillAppear");
     [super viewWillAppear:animated];
     self.nameField.text = self.item.itemName;
     self.serialField.text=  self.item.serialNumber;
     self.valueField.text =  [NSString stringWithFormat:@"%d", self.item.valueInDollars];
     self.dateLabel.text = [self.item.dateCreated description];
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    NSLog(@"viewWillDisappear");
+    [self.view endEditing:NO];
+    
+    LRDItem *item = self.item;
+    item.itemName = self.nameField.text;
+    item.serialNumber = self.nameField.text;
+    item.valueInDollars = [self.nameField.text intValue];
 }
 
 /*

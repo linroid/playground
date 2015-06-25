@@ -20,9 +20,11 @@
     self.window = [[UIWindow alloc] initWithFrame:screenRect];
     
     LRDItemTableViewController *itemTableController = [[LRDItemTableViewController alloc] initWithStyle:UITableViewStylePlain];
+ 
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:itemTableController];
     
+    navController.navigationItem.title = @"Homepwner";
     self.window.rootViewController = navController;
     self.window.backgroundColor = [UIColor clearColor];
     [self.window makeKeyAndVisible];

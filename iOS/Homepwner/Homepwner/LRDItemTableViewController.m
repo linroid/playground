@@ -11,8 +11,6 @@
 
 @interface LRDItemTableViewController () <UITableViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UIView *headerView;
-
 @end
 
 @implementation LRDItemTableViewController
@@ -28,6 +26,14 @@
             [[LRDItemStore sharedStore] createItem];
         }
     }
+    
+    self.navigationItem.title = @"Homepwner";
+    
+    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc]
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                      target:self action:@selector(addNewItem:)];
+    self.navigationItem.rightBarButtonItem = addBarButton;
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
     return self;
 }
 
@@ -39,8 +45,6 @@
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"tableCell"];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"endCell"];
     self.tableView.delegate = self;
-    UIView *header = self.headerView;
-    [self.tableView setTableHeaderView:header];
     
     UILabel *footer = [[UILabel alloc] init];
     footer.text = @"No mode items";
@@ -68,13 +72,13 @@
     [self.tableView insertRowsAtIndexPaths: @[lastIndexPath] withRowAnimation:UITableViewRowAnimationTop];
 }
 - (IBAction)toggleEditingMode:(id)sender {
-    if(self.tableView.isEditing) {
-        [sender setTitle: @"Edit" forState: UIControlStateNormal];
-        [self setEditing:NO animated:YES];
-    } else {
-        [sender setTitle: @"Done" forState:UIControlStateNormal];
-        [self setEditing:YES animated:YES];
-    }
+//    if(self.tableView.isEditing) {
+//        [sender setTitle: @"Edit" forState: UIControlStateNormal];
+//        [self setEditing:NO animated:YES];
+//    } else {
+//        [sender setTitle: @"Done" forState:UIControlStateNormal];
+//        [self setEditing:YES animated:YES];
+//    }
 }
 
 - (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -87,12 +91,6 @@
 
 - (void) tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
     [[LRDItemStore sharedStore] moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
-}
-- (UIView *) headerView {
-    if(_headerView == nil) {
-        [[NSBundle mainBundle] loadNibNamed:@"HeaderView" owner:self options: nil];
-    }
-    return _headerView;
 }
 
 #pragma mark - Table view data source
@@ -140,7 +138,7 @@
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] init];
+    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] initWithNibName:@"LRDDetailViewController" bundle:[NSBundle mainBundle]];
     NSArray *items = [[LRDItemStore sharedStore] allItems];
     detailController.item = items[indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];
@@ -166,6 +164,11 @@
         return NO;
     }
     return YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
 }
 
 /*

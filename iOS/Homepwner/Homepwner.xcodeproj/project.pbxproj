@@ -17,6 +17,8 @@
 		8659E71D1B3A54B400E85F4A /* LRDItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8659E71C1B3A54B400E85F4A /* LRDItemTableViewController.m */; };
 		8659E7201B3A592200E85F4A /* LRDItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8659E71F1B3A592200E85F4A /* LRDItem.m */; };
 		8659E7231B3A5BC400E85F4A /* LRDItemStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 8659E7221B3A5BC400E85F4A /* LRDItemStore.m */; };
+		865E2CC51B3BF2CB00049296 /* ChangeDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 865E2CC31B3BF2CB00049296 /* ChangeDateViewController.m */; };
+		865E2CC61B3BF2CB00049296 /* ChangeDateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 865E2CC41B3BF2CB00049296 /* ChangeDateViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,9 @@
 		8659E71F1B3A592200E85F4A /* LRDItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDItem.m; sourceTree = "<group>"; };
 		8659E7211B3A5BC400E85F4A /* LRDItemStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDItemStore.h; sourceTree = "<group>"; };
 		8659E7221B3A5BC400E85F4A /* LRDItemStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDItemStore.m; sourceTree = "<group>"; };
+		865E2CC21B3BF2CB00049296 /* ChangeDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeDateViewController.h; sourceTree = "<group>"; };
+		865E2CC31B3BF2CB00049296 /* ChangeDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeDateViewController.m; sourceTree = "<group>"; };
+		865E2CC41B3BF2CB00049296 /* ChangeDateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangeDateViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +109,9 @@
 				8631F2281B3BB79800D289FF /* LRDDetailViewController.h */,
 				8631F2291B3BB79800D289FF /* LRDDetailViewController.m */,
 				8631F22A1B3BB79800D289FF /* LRDDetailViewController.xib */,
+				865E2CC21B3BF2CB00049296 /* ChangeDateViewController.h */,
+				865E2CC31B3BF2CB00049296 /* ChangeDateViewController.m */,
+				865E2CC41B3BF2CB00049296 /* ChangeDateViewController.xib */,
 			);
 			path = Homepwner;
 			sourceTree = "<group>";
@@ -214,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				865E2CC61B3BF2CB00049296 /* ChangeDateViewController.xib in Resources */,
 				8631F22C1B3BB79800D289FF /* LRDDetailViewController.xib in Resources */,
 				8659E7031B3A3C9B00E85F4A /* LaunchScreen.xib in Resources */,
 				8659E7001B3A3C9B00E85F4A /* Images.xcassets in Resources */,
@@ -238,6 +247,7 @@
 				8659E7231B3A5BC400E85F4A /* LRDItemStore.m in Sources */,
 				8659E7201B3A592200E85F4A /* LRDItem.m in Sources */,
 				8659E6F21B3A3C9B00E85F4A /* main.m in Sources */,
+				865E2CC51B3BF2CB00049296 /* ChangeDateViewController.m in Sources */,
 				8631F22B1B3BB79800D289FF /* LRDDetailViewController.m in Sources */,
 				8659E71D1B3A54B400E85F4A /* LRDItemTableViewController.m in Sources */,
 			);

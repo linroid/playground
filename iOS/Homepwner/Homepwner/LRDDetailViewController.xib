@@ -6,6 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LRDDetailViewController">
             <connections>
+                <outlet property="changeDateButton" destination="hzm-k6-IFD" id="1LU-hp-8GH"/>
                 <outlet property="dateLabel" destination="uGS-8g-Ejy" id="Hbe-aF-O88"/>
                 <outlet property="nameField" destination="aIc-O4-FO7" id="ocU-wH-Hfl"/>
                 <outlet property="serialField" destination="Pea-Cv-6lx" id="H8V-Oe-jfR"/>
@@ -37,7 +38,7 @@
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LNv-n0-9ZW">
                     <rect key="frame" x="84" y="225" width="268" height="30"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits"/>
+                    <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="fxM-Oe-6il"/>
                     </connections>
@@ -66,6 +67,15 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzm-k6-IFD">
+                    <rect key="frame" x="143" y="317" width="90" height="30"/>
+                    <state key="normal" title="Change Date">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="changeDate:" destination="-1" eventType="touchUpInside" id="05t-yh-jps"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>

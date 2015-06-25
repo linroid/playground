@@ -7,6 +7,7 @@
 //
 
 #import "LRDItemStore.h"
+#import "LRDImageStore.h"
 
 @implementation LRDItemStore
 
@@ -39,11 +40,14 @@
     item.itemName = [NSString stringWithFormat: @"hello %d", arc4random()];
     item.serialNumber = [NSString stringWithFormat: @"%d", arc4random()];
     item.valueInDollars = arc4random() % 1000;
+    NSUUID *uuid = [[NSUUID alloc] init];
+    item.imageKey = [uuid UUIDString];
     [_privateItems addObject:item];
     return item;
 }
 
 - (void) removeItem: (LRDItem *) item {
+    [[LRDImageStore sharedStore] deleteImageForKey:item.imageKey];
     [self.privateItems removeObjectIdenticalTo: item];
 }
 

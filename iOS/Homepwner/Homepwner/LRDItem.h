@@ -14,5 +14,5 @@
 @property (nonatomic, readwrite) NSString *serialNumber;
 @property (nonatomic, readwrite) int valueInDollars;
 @property (nonatomic, readwrite) NSDate *dateCreated;
-
+@property (nonatomic, readwrite) NSString *imageKey;
 @end

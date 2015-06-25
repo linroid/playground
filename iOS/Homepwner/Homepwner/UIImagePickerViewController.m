@@ -1,32 +1,24 @@
 //
-//  ChangeDateViewController.m
+//  UIImagePickerViewController.m
 //  Homepwner
 //
 //  Created by 张林 on 15/6/25.
 //  Copyright (c) 2015年 张林. All rights reserved.
 //
 
-#import "ChangeDateViewController.h"
+#import "UIImagePickerViewController.h"
 
-@interface ChangeDateViewController ()
-
-@property (weak, nonatomic) IBOutlet UIDatePicker *datePicker;
+@interface UIImagePickerViewController ()
 
 @end
 
-@implementation ChangeDateViewController
+@implementation UIImagePickerViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.datePicker setDate:self.item.dateCreated];
-    UIBarButtonItem *completeBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveDate:)];
-    self.navigationItem.rightBarButtonItem = completeBar;
+    // Do any additional setup after loading the view from its nib.
 }
 
--(void) saveDate:(id) sender{
-    self.item.dateCreated = self.datePicker.date;
-    [self.navigationController popViewControllerAnimated:YES];
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

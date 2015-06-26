@@ -82,6 +82,15 @@
 
 }
 
+- (void)viewDidLayoutSubviews {
+    for (UIView *subView in self.view.subviews) {
+        if([subView hasAmbiguousLayout]) {
+            NSLog(@"Ambigous:%@", subView);
+        } else {
+            NSLog(@"No ambigous view");
+        }
+    }
+}
 -(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     self.imageView.image = image;
@@ -129,6 +138,11 @@
 
 - (IBAction)backgroundTapped:(id)sender {
     [self.view endEditing:NO];
+    for(UIView *subView in self.view.subviews) {
+        if ([subView hasAmbiguousLayout]) {
+            [subView exerciseAmbiguityInLayout];
+        }
+    }
     NSLog(@"backgroundTapped");
 }
 

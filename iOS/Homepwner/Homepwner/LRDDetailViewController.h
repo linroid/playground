@@ -12,5 +12,5 @@
 @interface LRDDetailViewController : UIViewController
 
 @property (nonatomic, strong) LRDItem *item;
-
+-(instancetype) initForNewItem:(BOOL) isNew;
 @end

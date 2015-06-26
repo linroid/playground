@@ -6,8 +6,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LRDDetailViewController">
             <connections>
+                <outlet property="cameraButton" destination="tCC-P1-zm3" id="Q1E-hM-oTM"/>
                 <outlet property="changeDateButton" destination="hzm-k6-IFD" id="1LU-hp-8GH"/>
-                <outlet property="dateLabel" destination="uGS-8g-Ejy" id="Hbe-aF-O88"/>
+                <outlet property="dateButton" destination="hzm-k6-IFD" id="hxh-ru-QlN"/>
                 <outlet property="nameField" destination="aIc-O4-FO7" id="ocU-wH-Hfl"/>
                 <outlet property="serialField" destination="Pea-Cv-6lx" id="H8V-Oe-jfR"/>
                 <outlet property="toolbar" destination="ccH-ud-mA9" id="WTt-t8-IIV"/>
@@ -20,7 +21,7 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aIc-O4-FO7">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aIc-O4-FO7">
                     <rect key="frame" x="84" y="93" width="268" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="j6Z-6y-Mpv"/>
@@ -39,7 +40,7 @@
                         <outlet property="delegate" destination="-1" id="fxM-Oe-6il"/>
                     </connections>
                 </textField>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gI3-zJ-8sP">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gI3-zJ-8sP">
                     <rect key="frame" x="17" y="97" width="46" height="21"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -57,19 +58,6 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uGS-8g-Ejy">
-                    <rect key="frame" x="36" y="288" width="342" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzm-k6-IFD">
-                    <rect key="frame" x="143" y="317" width="129" height="22"/>
-                    <state key="normal" title="Change Date"/>
-                    <connections>
-                        <action selector="changeDate:" destination="-1" eventType="touchUpInside" id="05t-yh-jps"/>
-                    </connections>
-                </button>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ccH-ud-mA9">
                     <rect key="frame" x="0.0" y="692" width="414" height="44"/>
                     <constraints>
@@ -100,13 +88,23 @@
                         <outlet property="delegate" destination="-1" id="tra-sD-nhQ"/>
                     </connections>
                 </textField>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzm-k6-IFD">
+                    <rect key="frame" x="84" y="288" width="268" height="22"/>
+                    <state key="normal" title="2015-06-26 12:00:00"/>
+                    <connections>
+                        <action selector="changeDate:" destination="-1" eventType="touchUpInside" id="qdO-dg-ORo"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="aIc-O4-FO7" secondAttribute="trailing" constant="62" id="3Nq-T2-e3L"/>
                 <constraint firstAttribute="trailing" secondItem="ccH-ud-mA9" secondAttribute="trailing" id="8hH-hZ-Zz5"/>
+                <constraint firstItem="gI3-zJ-8sP" firstAttribute="top" relation="greaterThanOrEqual" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="97" id="9Dl-rQ-jUu"/>
                 <constraint firstItem="aIc-O4-FO7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="93" id="Adp-q5-jjE"/>
+                <constraint firstItem="gI3-zJ-8sP" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="17" id="BFH-Hm-RBZ"/>
                 <constraint firstItem="aIc-O4-FO7" firstAttribute="leading" secondItem="gI3-zJ-8sP" secondAttribute="trailing" constant="21" id="Yce-GX-aTq"/>
+                <constraint firstItem="gI3-zJ-8sP" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="97" id="jxJ-C2-8Gx"/>
                 <constraint firstAttribute="bottom" secondItem="ccH-ud-mA9" secondAttribute="bottom" id="qSW-hp-PKg"/>
                 <constraint firstItem="ccH-ud-mA9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="sKm-jo-ngb"/>
             </constraints>

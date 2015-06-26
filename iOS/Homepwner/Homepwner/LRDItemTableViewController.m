@@ -65,11 +65,16 @@
 }
 
 - (IBAction) addNewItem: (id) sender {
-    [[LRDItemStore sharedStore] createItem];
-    NSInteger lastRow = [self.tableView numberOfRowsInSection: 0];
-    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow: lastRow inSection:0];
+//    [[LRDItemStore sharedStore] createItem];
+//    NSInteger lastRow = [self.tableView numberOfRowsInSection: 0];
+//    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow: lastRow inSection:0];
+//    
+//    [self.tableView insertRowsAtIndexPaths: @[lastIndexPath] withRowAnimation:UITableViewRowAnimationTop];
     
-    [self.tableView insertRowsAtIndexPaths: @[lastIndexPath] withRowAnimation:UITableViewRowAnimationTop];
+    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] initForNewItem:YES];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailController];
+    navController.modalPresentationStyle = UIModalPresentation;
+    [self presentViewController:navController animated:YES completion:nil];
 }
 - (IBAction)toggleEditingMode:(id)sender {
 //    if(self.tableView.isEditing) {
@@ -109,7 +114,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell;
-    NSInteger position;
+    NSInteger position = 0;
     if(indexPath.section == 0){
         cell = [tableView dequeueReusableCellWithIdentifier: @"tableCell"
                                                forIndexPath: indexPath];
@@ -138,7 +143,7 @@
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] initWithNibName:@"LRDDetailViewController" bundle:[NSBundle mainBundle]];
+    LRDDetailViewController *detailController = [[LRDDetailViewController alloc] initForNewItem:NO];
     NSArray *items = [[LRDItemStore sharedStore] allItems];
     detailController.item = items[indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];

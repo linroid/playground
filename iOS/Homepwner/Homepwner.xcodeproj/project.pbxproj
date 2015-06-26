@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8631F22B1B3BB79800D289FF /* LRDDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8631F2291B3BB79800D289FF /* LRDDetailViewController.m */; };
-		8631F22C1B3BB79800D289FF /* LRDDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8631F22A1B3BB79800D289FF /* LRDDetailViewController.xib */; };
 		8659E6F21B3A3C9B00E85F4A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8659E6F11B3A3C9B00E85F4A /* main.m */; };
 		8659E6F51B3A3C9B00E85F4A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8659E6F41B3A3C9B00E85F4A /* AppDelegate.m */; };
 		8659E7001B3A3C9B00E85F4A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8659E6FF1B3A3C9B00E85F4A /* Images.xcassets */; };
@@ -20,6 +19,7 @@
 		865E2CC51B3BF2CB00049296 /* LRDChangeDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 865E2CC31B3BF2CB00049296 /* LRDChangeDateViewController.m */; };
 		865E2CC61B3BF2CB00049296 /* LRDChangeDateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 865E2CC41B3BF2CB00049296 /* LRDChangeDateViewController.xib */; };
 		865E2CCE1B3BFEB100049296 /* LRDImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 865E2CCD1B3BFEB100049296 /* LRDImageStore.m */; };
+		86C740F41B3D7E300065DB46 /* LRDDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 86C740F31B3D7E300065DB46 /* LRDDetailViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +35,6 @@
 /* Begin PBXFileReference section */
 		8631F2281B3BB79800D289FF /* LRDDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDDetailViewController.h; sourceTree = "<group>"; };
 		8631F2291B3BB79800D289FF /* LRDDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDDetailViewController.m; sourceTree = "<group>"; };
-		8631F22A1B3BB79800D289FF /* LRDDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LRDDetailViewController.xib; sourceTree = "<group>"; };
 		8659E6EC1B3A3C9B00E85F4A /* Homepwner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Homepwner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8659E6F01B3A3C9B00E85F4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8659E6F11B3A3C9B00E85F4A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -57,6 +56,7 @@
 		865E2CC41B3BF2CB00049296 /* LRDChangeDateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LRDChangeDateViewController.xib; sourceTree = "<group>"; };
 		865E2CCC1B3BFEB100049296 /* LRDImageStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDImageStore.h; sourceTree = "<group>"; };
 		865E2CCD1B3BFEB100049296 /* LRDImageStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDImageStore.m; sourceTree = "<group>"; };
+		86C740F31B3D7E300065DB46 /* LRDDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LRDDetailViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +111,7 @@
 				8659E7221B3A5BC400E85F4A /* LRDItemStore.m */,
 				8631F2281B3BB79800D289FF /* LRDDetailViewController.h */,
 				8631F2291B3BB79800D289FF /* LRDDetailViewController.m */,
-				8631F22A1B3BB79800D289FF /* LRDDetailViewController.xib */,
+				86C740F31B3D7E300065DB46 /* LRDDetailViewController.xib */,
 				865E2CC21B3BF2CB00049296 /* LRDChangeDateViewController.h */,
 				865E2CC31B3BF2CB00049296 /* LRDChangeDateViewController.m */,
 				865E2CC41B3BF2CB00049296 /* LRDChangeDateViewController.xib */,
@@ -227,8 +227,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86C740F41B3D7E300065DB46 /* LRDDetailViewController.xib in Resources */,
 				865E2CC61B3BF2CB00049296 /* LRDChangeDateViewController.xib in Resources */,
-				8631F22C1B3BB79800D289FF /* LRDDetailViewController.xib in Resources */,
 				8659E7031B3A3C9B00E85F4A /* LaunchScreen.xib in Resources */,
 				8659E7001B3A3C9B00E85F4A /* Images.xcassets in Resources */,
 			);

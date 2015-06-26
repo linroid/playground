@@ -10,20 +10,53 @@
 #import "LRDItem.h"
 #import "LRDChangeDateViewController.h"
 #import "LRDImageStore.h"
+#import "LRDItemStore.h"
 
-@interface LRDDetailViewController () <UIImagePickerControllerDelegate, UITextFieldDelegate>
+@interface LRDDetailViewController () <UIImagePickerControllerDelegate, UITextFieldDelegate, UIPopoverControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
 @property (weak, nonatomic) IBOutlet UITextField *serialField;
 @property (weak, nonatomic) IBOutlet UITextField *valueField;
-@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UIButton *changeDateButton;
 @property (weak, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *cameraButton;
+@property (weak, nonatomic) IBOutlet UIButton *dateButton;
+
+
+@property (strong, nonatomic) UIPopoverController *imagePickerPopover;
 
 @end
 
 @implementation LRDDetailViewController
+
+#pragma mark - init
+-(instancetype) initForNewItem:(BOOL) isNew {
+    self = [super initWithNibName:@"LRDDetailViewController" bundle: nil];
+    if(self) {
+        if(isNew) {
+            UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                      target:self
+                                                                                      action:@selector(done:)];
+            self.navigationItem.rightBarButtonItem = doneItem;
+            UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                        target:self
+                                                                                        action:@selector(cancel:)];
+            self.navigationItem.leftBarButtonItem = cancelItem;
+            self.item = [[LRDItemStore sharedStore] createItem];
+        } else {
+            
+            UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action: @selector(saveChange:)];
+            self.navigationItem.rightBarButtonItem = saveItem;
+        }
+    }
+    return self;
+}
+-(instancetype) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    @throw [[NSException alloc] initWithName:@"@Wrong Initializer"
+                                      reason:@"Use initForNewItem"
+                                    userInfo:nil];
+}
 
 - (void)setItem:(LRDItem *)item {
     _item = item;
@@ -33,11 +66,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     NSLog(@"viewDidLoad");
-    UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action: @selector(saveChange:)];
     self.nameField.delegate = self;
     self.serialField.delegate = self;
     self.valueField.delegate = self;
-    self.navigationItem.rightBarButtonItem = saveItem;
     
     UIImageView *iv = [[UIImageView alloc] initWithImage:nil];
     iv.contentMode = UIViewContentModeScaleAspectFit;
@@ -46,7 +77,7 @@
     self.imageView = iv;
     
     NSDictionary *nameMap = @{@"imageView": self.imageView,
-                              @"dateLabel": self.dateLabel,
+                              @"dateButton": self.dateButton,
                               @"toolbar": self.toolbar
                               };
     
@@ -54,7 +85,7 @@
                                                                              options:0
                                                                              metrics:nil
                                                                                views:nameMap];
-    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[dateLabel]-[imageView]-[toolbar]"
+    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[dateButton]-[imageView]-[toolbar]"
                                                                            options:0
                                                                            metrics:nil
                                                                              views:nameMap];
@@ -103,7 +134,7 @@
     self.nameField.text = self.item.itemName;
     self.serialField.text=  self.item.serialNumber;
     self.valueField.text =  [NSString stringWithFormat:@"%d", self.item.valueInDollars];
-    self.dateLabel.text = [self.item.dateCreated description];
+    self.dateButton.titleLabel.text = [self.item.dateCreated description];
     UIImage *image = [[LRDImageStore sharedStore] imageForKey:self.item.imageKey];
     if(image) {
         self.imageView.image = image;
@@ -113,7 +144,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     NSLog(@"viewWillDisappear");
     [self saveChange:nil];
-
+    
 }
 
 - (void)viewDidLayoutSubviews {
@@ -125,7 +156,24 @@
         }
     }
 }
+
+
+#pragma mark - Delegate
+
+-(void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+    NSLog(@"popoverControllerDidDismissPopover");
+    self.imagePickerPopover = nil;
+}
+-(void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
+    NSLog(@"popoverController");
+}
 -(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    if(self.imagePickerPopover){
+        [self.imagePickerPopover dismissPopoverAnimated:YES];
+        self.imagePickerPopover = nil;
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     self.imageView.image = image;
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -133,9 +181,19 @@
 }
 
 
+
 #pragma mark - Actions
 
-- (IBAction) changeDate:(id) sender {
+-(void) cancel:(id)sender {
+    [[LRDItemStore sharedStore] removeItem: self.item];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+-(void) done:(id) sender {
+    [self saveChange:sender];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void) changeDate:(id) sender {
     LRDChangeDateViewController *changeDateController = [[LRDChangeDateViewController alloc] init];
     changeDateController.item = self.item;
     [self.navigationController pushViewController:changeDateController animated:YES];
@@ -160,7 +218,21 @@
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     }
     imagePicker.delegate = self;
-    [self presentViewController:imagePicker animated:YES completion: nil];
+    //    [self presentViewController:imagePicker animated:YES completion: nil];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        if(self.imagePickerPopover!=nil && [self.imagePickerPopover isPopoverVisible]) {
+            [self.imagePickerPopover dismissPopoverAnimated:YES];
+            self.imagePickerPopover = nil;
+            return;
+        }
+        self.imagePickerPopover = [[UIPopoverController alloc] initWithContentViewController:imagePicker];
+        self.imagePickerPopover.delegate = self;
+        [self.imagePickerPopover presentPopoverFromBarButtonItem:sender
+                                        permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                        animated:YES];
+    } else {
+        [self presentViewController:imagePicker animated:YES completion:nil];
+    }
     
 }
 
@@ -181,14 +253,14 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 
 @end

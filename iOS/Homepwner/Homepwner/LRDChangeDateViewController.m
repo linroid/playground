@@ -16,11 +16,16 @@
 
 @implementation LRDChangeDateViewController
 
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.datePicker setDate:self.item.dateCreated];
-    UIBarButtonItem *completeBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveDate:)];
+    UIBarButtonItem *completeBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                                 target:self
+                                                                                 action:@selector(saveDate:)];
     self.navigationItem.rightBarButtonItem = completeBar;
+
+    [self.datePicker setDate:self.item.dateCreated];
 }
 
 -(void) saveDate:(id) sender{
@@ -41,5 +46,7 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+
 
 @end

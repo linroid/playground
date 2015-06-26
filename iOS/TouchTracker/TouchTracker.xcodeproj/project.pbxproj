@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		862887831B3CEE13009F3235 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887821B3CEE13009F3235 /* main.m */; };
 		862887861B3CEE13009F3235 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887851B3CEE13009F3235 /* AppDelegate.m */; };
-		862887891B3CEE13009F3235 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887881B3CEE13009F3235 /* ViewController.m */; };
-		8628878C1B3CEE13009F3235 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8628878A1B3CEE13009F3235 /* Main.storyboard */; };
 		8628878E1B3CEE13009F3235 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8628878D1B3CEE13009F3235 /* Images.xcassets */; };
 		862887911B3CEE13009F3235 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8628878F1B3CEE13009F3235 /* LaunchScreen.xib */; };
 		8628879D1B3CEE13009F3235 /* TouchTrackerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8628879C1B3CEE13009F3235 /* TouchTrackerTests.m */; };
+		862887A81B3CEED8009F3235 /* LRDLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887A71B3CEED8009F3235 /* LRDLine.m */; };
+		862887AB1B3CF1C0009F3235 /* LRDDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887AA1B3CF1C0009F3235 /* LRDDrawView.m */; };
+		862887AE1B3CF2A7009F3235 /* LRDDrawViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 862887AD1B3CF2A7009F3235 /* LRDDrawViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +33,17 @@
 		862887821B3CEE13009F3235 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		862887841B3CEE13009F3235 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		862887851B3CEE13009F3235 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		862887871B3CEE13009F3235 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		862887881B3CEE13009F3235 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		8628878B1B3CEE13009F3235 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8628878D1B3CEE13009F3235 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		862887901B3CEE13009F3235 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		862887961B3CEE13009F3235 /* TouchTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TouchTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8628879B1B3CEE13009F3235 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8628879C1B3CEE13009F3235 /* TouchTrackerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchTrackerTests.m; sourceTree = "<group>"; };
+		862887A61B3CEED8009F3235 /* LRDLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDLine.h; sourceTree = "<group>"; };
+		862887A71B3CEED8009F3235 /* LRDLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDLine.m; sourceTree = "<group>"; };
+		862887A91B3CF1C0009F3235 /* LRDDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDDrawView.h; sourceTree = "<group>"; };
+		862887AA1B3CF1C0009F3235 /* LRDDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDDrawView.m; sourceTree = "<group>"; };
+		862887AC1B3CF2A7009F3235 /* LRDDrawViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRDDrawViewController.h; sourceTree = "<group>"; };
+		862887AD1B3CF2A7009F3235 /* LRDDrawViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRDDrawViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,12 +87,15 @@
 			children = (
 				862887841B3CEE13009F3235 /* AppDelegate.h */,
 				862887851B3CEE13009F3235 /* AppDelegate.m */,
-				862887871B3CEE13009F3235 /* ViewController.h */,
-				862887881B3CEE13009F3235 /* ViewController.m */,
-				8628878A1B3CEE13009F3235 /* Main.storyboard */,
 				8628878D1B3CEE13009F3235 /* Images.xcassets */,
 				8628878F1B3CEE13009F3235 /* LaunchScreen.xib */,
 				862887801B3CEE13009F3235 /* Supporting Files */,
+				862887A61B3CEED8009F3235 /* LRDLine.h */,
+				862887A71B3CEED8009F3235 /* LRDLine.m */,
+				862887A91B3CF1C0009F3235 /* LRDDrawView.h */,
+				862887AA1B3CF1C0009F3235 /* LRDDrawView.m */,
+				862887AC1B3CF2A7009F3235 /* LRDDrawViewController.h */,
+				862887AD1B3CF2A7009F3235 /* LRDDrawViewController.m */,
 			);
 			path = TouchTracker;
 			sourceTree = "<group>";
@@ -199,7 +206,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8628878C1B3CEE13009F3235 /* Main.storyboard in Resources */,
 				862887911B3CEE13009F3235 /* LaunchScreen.xib in Resources */,
 				8628878E1B3CEE13009F3235 /* Images.xcassets in Resources */,
 			);
@@ -219,9 +225,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				862887891B3CEE13009F3235 /* ViewController.m in Sources */,
+				862887A81B3CEED8009F3235 /* LRDLine.m in Sources */,
+				862887AE1B3CF2A7009F3235 /* LRDDrawViewController.m in Sources */,
 				862887861B3CEE13009F3235 /* AppDelegate.m in Sources */,
 				862887831B3CEE13009F3235 /* main.m in Sources */,
+				862887AB1B3CF1C0009F3235 /* LRDDrawView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,14 +252,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		8628878A1B3CEE13009F3235 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8628878B1B3CEE13009F3235 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		8628878F1B3CEE13009F3235 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (

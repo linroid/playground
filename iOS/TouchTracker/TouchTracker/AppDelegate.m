@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "LRDDrawViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -17,6 +17,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    LRDDrawViewController *controller = [[LRDDrawViewController alloc] init];
+    self.window = [[UIWindow alloc] initWithFrame:screenRect];
+    self.window.rootViewController = controller;
+    [self.window makeKeyAndVisible];
     return YES;
 }
 

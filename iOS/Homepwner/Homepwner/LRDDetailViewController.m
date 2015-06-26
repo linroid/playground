@@ -18,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *valueField;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UIButton *changeDateButton;
-@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 
 @end
@@ -37,8 +37,42 @@
     self.nameField.delegate = self;
     self.serialField.delegate = self;
     self.valueField.delegate = self;
-    
     self.navigationItem.rightBarButtonItem = saveItem;
+    
+    UIImageView *iv = [[UIImageView alloc] initWithImage:nil];
+    iv.contentMode = UIViewContentModeScaleAspectFit;
+    iv.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:iv];
+    self.imageView = iv;
+    
+    NSDictionary *nameMap = @{@"imageView": self.imageView,
+                              @"dateLabel": self.dateLabel,
+                              @"toolbar": self.toolbar
+                              };
+    
+    NSArray *horizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[imageView]-0-|"
+                                                                             options:0
+                                                                             metrics:nil
+                                                                               views:nameMap];
+    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[dateLabel]-[imageView]-[toolbar]"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:nameMap];
+    [self.imageView setContentHuggingPriority:100
+                                      forAxis:UILayoutConstraintAxisVertical];
+    [self.imageView setContentHuggingPriority:100
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    NSLayoutConstraint *aspectConstraint = [NSLayoutConstraint constraintWithItem:self.imageView
+                                                                        attribute:NSLayoutAttributeHeight
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.imageView
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                       multiplier:1.0
+                                                                         constant:0.0];
+    
+    [self.view addConstraints:horizontalConstraints];
+    [self.view addConstraints:verticalConstraints];
+    [self.imageView addConstraint:aspectConstraint];
 }
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];

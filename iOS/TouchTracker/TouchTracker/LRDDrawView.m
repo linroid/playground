@@ -11,8 +11,8 @@
 
 @interface LRDDrawView ()
 
-@property(nonatomic, strong) LRDLine *currentLine;
 @property(nonatomic, strong) NSMutableArray *finishedLines;
+@property(nonatomic, strong) NSMutableDictionary *linesInProgress;
 
 @end
 
@@ -23,12 +23,14 @@
     if (self) {
         self.finishedLines = [[NSMutableArray alloc] init];
         self.backgroundColor = [UIColor grayColor];
-        
+        self.multipleTouchEnabled = YES;
+        self.linesInProgress = [[NSMutableDictionary alloc]init];
     }
     return self;
 }
 - (void)strokeLine:(LRDLine *)line {
     UIBezierPath *path = [UIBezierPath bezierPath];
+    [self setLineColor:line];
     path.lineWidth = 5;
     path.lineCapStyle = kCGLineCapRound;
     [path moveToPoint:line.begin];
@@ -38,39 +40,76 @@
 
 - (void)drawRect:(CGRect)rect {
     [[UIColor blackColor] set];
-        for (LRDLine *line in self.finishedLines) {
+    for (LRDLine *line in self.finishedLines) {
+        [self setLineColor:line];
         [self strokeLine:line];
     }
+    if ([self.linesInProgress count]>0) {
+        
+        for(NSValue *key in self.linesInProgress) {
+            LRDLine *line = self.linesInProgress[key];
+            [self setLineColor:line];
+            [self strokeLine:line];
+        }
+    }
 
-    if (self.currentLine) {
-        [[UIColor blueColor] set];
-        [self strokeLine:self.currentLine];
+}
+- (void) setLineColor:(LRDLine *) line {
+    if (line.angle <90){
+        [[UIColor yellowColor] set];
+    } else if(line.angle < 180) {
+        [[UIColor greenColor] set];
+    } else if(line.angle <270) {
+        [[UIColor blackColor] set];
+    } else {
+        [[UIColor purpleColor] set];
     }
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInView:self];
-    self.currentLine = [[LRDLine alloc] init];
-    self.currentLine.begin = location;
-    self.currentLine.end = location;
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    for (UITouch *touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        LRDLine *line = [[LRDLine alloc] init];
+        line.begin = location;
+        line.end = location;
+        NSValue *key = [NSValue valueWithNonretainedObject:touch];
+        self.linesInProgress[key] = line;
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInView:self];
-    self.currentLine.end = location;
+    
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    for (UITouch *touch in touches) {
+        NSValue *key = [NSValue valueWithNonretainedObject:touch];
+        LRDLine *line = self.linesInProgress[key];
+        
+        CGPoint location = [touch locationInView:self];
+        line.end = location;
+    }
     [self setNeedsDisplay];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.finishedLines addObject:self.currentLine];
-    self.currentLine = nil;
+    
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    for (UITouch *touch in touches) {
+        NSValue *key = [NSValue valueWithNonretainedObject:touch];
+        LRDLine *line = self.linesInProgress[key];
+        [self.finishedLines addObject:line];
+        [self.linesInProgress removeObjectForKey:key];
+    }
     [self setNeedsDisplay];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    self.currentLine = nil;
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    for (UITouch *touch in touches) {
+        NSValue *key = [NSValue valueWithNonretainedObject:touch];
+        [self.linesInProgress removeObjectForKey:key];
+    }
+
     [self setNeedsDisplay];
 }
 

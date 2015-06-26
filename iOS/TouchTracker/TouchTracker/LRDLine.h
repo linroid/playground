@@ -11,7 +11,9 @@
 
 @interface LRDLine : NSObject
 
-@property (nonatomic) CGPoint begin;
-@property (nonatomic) CGPoint end;
+@property (nonatomic, readwrite) CGPoint begin;
+@property (nonatomic, readwrite) CGPoint end;
+@property (nonatomic, readonly) float angle;
 
+-(void) setAngle;
 @end

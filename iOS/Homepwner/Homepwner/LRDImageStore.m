@@ -12,9 +12,10 @@
 
 + (instancetype)sharedStore {
     static LRDImageStore *sharedStore;
-    if(sharedStore == nil) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         sharedStore = [[LRDImageStore alloc] initPrivate];
-    }
+    });
     return sharedStore;
 }
 

@@ -13,9 +13,10 @@
 
 + (instancetype) sharedStore {
     static LRDItemStore *shareStore = nil;
-    if(shareStore == nil) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         shareStore = [[self alloc] initPrivate];
-    }
+    });
     return shareStore;
 }
 - (instancetype) init {

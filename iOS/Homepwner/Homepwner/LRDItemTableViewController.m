@@ -73,7 +73,7 @@
     
     LRDDetailViewController *detailController = [[LRDDetailViewController alloc] initForNewItem:YES];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailController];
-    navController.modalPresentationStyle = UIModalPresentation;
+    navController.modalPresentationStyle = UIModalPresentationPageSheet;
     [self presentViewController:navController animated:YES completion:nil];
 }
 - (IBAction)toggleEditingMode:(id)sender {

@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LRDItem : NSObject
+@interface LRDItem : NSObject <NSCoding>
 
 @property (nonatomic, readwrite) NSString *itemName;
 @property (nonatomic, readwrite) NSString *serialNumber;
 @property (nonatomic, readwrite) int valueInDollars;
 @property (nonatomic, readwrite) NSDate *dateCreated;
 @property (nonatomic, readwrite) NSString *imageKey;
+
 @end

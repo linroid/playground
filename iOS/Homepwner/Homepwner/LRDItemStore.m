@@ -27,7 +27,12 @@
 - (instancetype) initPrivate {
     self = [super init];
     if (self) {
-        _privateItems = [[NSMutableArray alloc] init];
+        NSString *path = [self itemArchivePath];
+        _privateItems = [NSKeyedUnarchiver unarchiveObjectWithFile: path];
+        if(!_privateItems){
+            _privateItems = [[NSMutableArray alloc] init];
+        }
+        
     }
     return self;
 }
@@ -44,12 +49,14 @@
     NSUUID *uuid = [[NSUUID alloc] init];
     item.imageKey = [uuid UUIDString];
     [_privateItems addObject:item];
+    [[LRDItemStore sharedStore] saveChanges];
     return item;
 }
 
 - (void) removeItem: (LRDItem *) item {
     [[LRDImageStore sharedStore] deleteImageForKey:item.imageKey];
     [self.privateItems removeObjectIdenticalTo: item];
+    [[LRDItemStore sharedStore] saveChanges];
 }
 
 - (void) moveItemAtIndex: (NSUInteger) fromIndex
@@ -57,5 +64,23 @@
     LRDItem *item = self.privateItems[fromIndex];
     [self.privateItems removeObjectIdenticalTo:item];
     [self.privateItems insertObject:item atIndex: toIndex];
+    [[LRDItemStore sharedStore] saveChanges];
+}
+
+- (BOOL) saveChanges {
+    NSString *archivePath = [self itemArchivePath];
+    BOOL success =  [NSKeyedArchiver archiveRootObject:self.privateItems toFile: archivePath];
+    if(success) {
+        NSLog(@"Save items success");
+    }else {
+        NSLog(@"Could not save items");
+    }
+    return success;
+}
+
+-(NSString *) itemArchivePath {
+    NSArray *documentDirectories = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [documentDirectories firstObject];
+    return [documentDirectory stringByAppendingPathComponent:@"items.archive"];
 }
 @end

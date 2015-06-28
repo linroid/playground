@@ -12,7 +12,7 @@
 #import "LRDImageStore.h"
 #import "LRDItemStore.h"
 
-@interface LRDDetailViewController () <UIImagePickerControllerDelegate, UITextFieldDelegate, UIPopoverControllerDelegate>
+@interface LRDDetailViewController () <UITextFieldDelegate, UIPopoverControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
 @property (weak, nonatomic) IBOutlet UITextField *serialField;

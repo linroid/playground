@@ -21,11 +21,6 @@
 }
 - (instancetype) init{
     self = [super initWithStyle:UITableViewStylePlain];
-    if (self) {
-        for (int i=0; i<8; i++) {
-            [[LRDItemStore sharedStore] createItem];
-        }
-    }
     
     self.navigationItem.title = @"Homepwner";
     

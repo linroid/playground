@@ -32,13 +32,34 @@
 
 - (void)setImage: (UIImage*)image forKey:(NSString *) key {
     self.dictionary[key] = image;
+    NSString *imagePath = [self imagePathForKey:key];
+    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    [data writeToFile:imagePath atomically:YES];
 }
 
 - (void)deleteImageForKey:(NSString *) key {
     [self.dictionary removeObjectForKey:key];
+    NSString *imagePath = [self imagePathForKey:key];
+    [[NSFileManager defaultManager] removeItemAtPath:imagePath error:nil];
 }
 
 - (UIImage *)imageForKey:(NSString *)key {
-    return self.dictionary[key];
+    UIImage *result = self.dictionary[key];
+    if(!result) {
+        NSString *imagePath = [self imagePathForKey:key];
+        result = [UIImage imageWithContentsOfFile:imagePath];
+        if( result ){
+            self.dictionary[key] = result;
+        }else {
+            NSLog(@"Could not retrieve image");
+        }
+    }
+    return result;
+}
+
+- (NSString *)imagePathForKey: (NSString *)key {
+    NSArray *documentDirectories = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [documentDirectories firstObject];
+    return [documentDirectory stringByAppendingPathComponent:key];
 }
 @end

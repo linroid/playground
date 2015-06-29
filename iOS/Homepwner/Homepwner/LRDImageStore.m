@@ -42,7 +42,7 @@
 - (void)setImage: (UIImage*)image forKey:(NSString *) key {
     self.dictionary[key] = image;
     NSString *imagePath = [self imagePathForKey:key];
-    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    NSData *data = UIImagePNGRepresentation(image);
     [data writeToFile:imagePath atomically:YES];
 }
 

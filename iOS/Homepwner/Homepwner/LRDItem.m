@@ -33,4 +33,11 @@
     }
     return self;
 }
+
+-(void) setThumbnailFromImage:(UIImage *) image  {
+    CGSize originImageSize = image.size;
+    CGRect newRect = CGRectMake(0, 0, 40, 40);
+    float ratio = MAX(newRect.size.width/originImageSize.height, newRect.size.height/originImageSize.height);
+}
+
 @end

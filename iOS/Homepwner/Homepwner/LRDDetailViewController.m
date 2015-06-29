@@ -121,6 +121,7 @@
     item.itemName = self.nameField.text;
     item.serialNumber = self.nameField.text;
     item.valueInDollars = [self.nameField.text intValue];
+  
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -8,6 +8,8 @@
 
 #import "LRDItemTableViewController.h"
 #import "LRDDetailViewController.h"
+#import "LRDImageStore.h"
+#import "LRDItemCell.h"
 
 @interface LRDItemTableViewController () <UITableViewDelegate>
 
@@ -37,7 +39,9 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"tableCell"];
+//    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"tableCell"];
+    UINib *nib = [UINib nibWithNibName:@"LRDItemCell" bundle:nil];
+    [self.tableView registerNib:nib forCellReuseIdentifier:@"tableCell"];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier: @"endCell"];
     self.tableView.delegate = self;
     
@@ -108,7 +112,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell;
+    LRDItemCell *cell;
     NSInteger position = 0;
     if(indexPath.section == 0){
         cell = [tableView dequeueReusableCellWithIdentifier: @"tableCell"
@@ -127,9 +131,10 @@
     if(indexPath.section == 0){
         NSArray *items = [[LRDItemStore sharedStore] allItems];
         LRDItem *item = items[indexPath.row];
-        cell.textLabel.text = [NSString stringWithFormat: @"%d) [%d %d] %@", position, indexPath.section, indexPath.row, item.itemName ];
-        UIImage *image = [UIImage imageNamed:@"AppIcon"];
-        cell.imageView.image = image;
+        cell.nameLabel.text = item.itemName;
+        cell.valueLabel.text = [NSString stringWithFormat:@"$%d", item.valueInDollars ];
+        cell.serialNumberLabel.text = item.serialNumber;
+        cell.thumbnailView.image = [[LRDImageStore sharedStore] imageForKey:item.imageKey];
     } else {
         cell.textLabel.text = @"No mode items";
     }

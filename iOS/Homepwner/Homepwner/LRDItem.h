@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface LRDItem : NSObject <NSCoding>
 
@@ -15,5 +16,7 @@
 @property (nonatomic, readwrite) int valueInDollars;
 @property (nonatomic, readwrite) NSDate *dateCreated;
 @property (nonatomic, readwrite) NSString *imageKey;
+
+-(void) setThumbnailFromImage:(UIImage *) image ;
 
 @end

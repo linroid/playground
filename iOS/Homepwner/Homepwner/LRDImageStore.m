@@ -23,8 +23,17 @@
     self = [super init];
     if(self){
         self.dictionary = [[NSMutableDictionary alloc] init];
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        [notificationCenter addObserver:self
+                               selector:@selector(clearCache:)
+                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                 object:nil];
     }
     return self;
+}
+- (void) clearCache: (NSNotification * ) notification {
+    NSLog(@"clearCache: %@", notification);
+    [self.dictionary removeAllObjects];
 }
 - (instancetype)init {
     @throw [NSException exceptionWithName:@"Singleton" reason:@"Use [LRDImageStore sharedStore]" userInfo:nil];

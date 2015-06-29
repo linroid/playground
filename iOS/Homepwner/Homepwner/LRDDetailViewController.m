@@ -147,15 +147,15 @@
     
 }
 
-- (void)viewDidLayoutSubviews {
-    for (UIView *subView in self.view.subviews) {
-        if([subView hasAmbiguousLayout]) {
-            NSLog(@"Ambigous:%@", subView);
-        } else {
-            NSLog(@"No ambigous view");
-        }
-    }
-}
+//- (void)viewDidLayoutSubviews {
+//    for (UIView *subView in self.view.subviews) {
+//        if([subView hasAmbiguousLayout]) {
+//            NSLog(@"Ambigous:%@", subView);
+//        } else {
+//            NSLog(@"No ambigous view");
+//        }
+//    }
+//}
 
 
 #pragma mark - Delegate

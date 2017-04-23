@@ -1,11 +1,11 @@
 package com.linroid.leetcode;
 
 public class TreeNode {
-    Character val;
-    TreeNode left;
-    TreeNode right;
+    public Integer val;
+    public TreeNode left;
+    public TreeNode right;
 
-    TreeNode(Character x) {
+    TreeNode(Integer x) {
         val = x;
     }
 }

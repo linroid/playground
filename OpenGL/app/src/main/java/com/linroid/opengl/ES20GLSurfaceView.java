@@ -26,6 +26,6 @@ public class ES20GLSurfaceView extends GLSurfaceView {
         GLRenderer renderer = new GLRenderer();
         setEGLContextClientVersion(2);
         setRenderer(renderer);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+//        setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 }

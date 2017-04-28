@@ -31,7 +31,7 @@ public class ES20GLSurfaceView extends GLSurfaceView {
         renderer = new GLRenderer();
         setEGLContextClientVersion(2);
         setRenderer(renderer);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+//        setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ES20GLSurfaceView extends GLSurfaceView {
                 if (x < getWidth() / 2) {
                     dy = dy * -1;
                 }
-                renderer.setAngle(renderer.getAngle() + (dx + dy) * TOUCH_FACTOR);
+                renderer.setAngle(renderer.getAngle() - (dx + dy) * TOUCH_FACTOR);
                 requestRender();
                 break;
         }

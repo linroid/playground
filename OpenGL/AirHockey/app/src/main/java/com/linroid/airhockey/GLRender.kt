@@ -18,7 +18,7 @@ import com.linroid.airhockey.utils.Sizeof
  */
 class GLRender(val surfaceView: GLSurfaceView) : GLSurfaceView.Renderer {
 
-    private val POINT_COMPONENT_COUNT = 2
+    private val POINT_COMPONENT_COUNT = 4
     private val COLOR_COMPONENT_COUNT = 3
     private val STRIDE = (POINT_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * Sizeof.FLOAT
 
@@ -32,23 +32,26 @@ class GLRender(val surfaceView: GLSurfaceView) : GLSurfaceView.Renderer {
     private lateinit var vertexData: FloatBuffer
 
     private val VERTEX_DATA_ARRAY = floatArrayOf(
-            // Triangle
-            0f, 0f, 1f, 1f, 1f,
-            -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-            0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-            0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-            -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-            -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+            // Order of coordinates: X, Y, Z, W, R, G, B
+
+            // Triangle Fan
+            0f, 0f, 0f, 1.5f, 1f, 1f, 1f,
+            -0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
+            0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
+            0.5f, 0.8f, 0f, 2f, 0.7f, 0.7f, 0.7f,
+            -0.5f, 0.8f, 0f, 2f, 0.7f, 0.7f, 0.7f,
+            -0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
 
             // Line 1
-            -0.5f, 0f, 1f, 0f, 0f,
-            0.5f, 0f, 1f, 0f, 0f,
+            -0.5f, 0f, 0f, 1.5f, 1f, 0f, 0f,
+            0.5f, 0f, 0f, 1.5f, 1f, 0f, 0f,
 
             // Mallets
-            0f, -0.25f, 0f, 0f, 1f,
-            0f, 0.25f, 1f, 0f, 0f)
+            0f, -0.4f, 0f, 1.25f, 0f, 0f, 1f,
+            0f, 0.4f, 0f, 1.75f, 1f, 0f, 0f)
 
     private val projectionMatrix = FloatArray(16)
+    private val modelMatrix = FloatArray(16)
 
     init {
         surfaceView.setEGLContextClientVersion(2)
@@ -79,15 +82,26 @@ class GLRender(val surfaceView: GLSurfaceView) : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-        var aspectRadio: Float
+//        val aspectRadio: Float
+//
+//        if (width > height) {
+//            aspectRadio = width.toFloat() / height.toFloat()
+//            Matrix.orthoM(projectionMatrix, 0, -aspectRadio, aspectRadio, -1f, 1f, -1f, 1f)
+//        } else {
+//            aspectRadio = height.toFloat() / width.toFloat()
+//            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f)
+//        }
 
-        if (width > height) {
-            aspectRadio = width.toFloat() / height.toFloat()
-            Matrix.orthoM(projectionMatrix, 0, -aspectRadio, aspectRadio, -1f, 1f, -1f, 1f)
-        } else {
-            aspectRadio = height.toFloat() / width.toFloat()
-            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f)
-        }
+        Matrix.setIdentityM(modelMatrix, 0)
+        Matrix.translateM(modelMatrix, 0, 0f, 0f, -3f)
+        Matrix.rotateM(modelMatrix, 0, -30f, 1f, 0f, 0f)
+
+//        val perspectiveMatrix = FloatArray(16)
+        Matrix.perspectiveM(projectionMatrix, 0, 45f, width.toFloat() / height.toFloat(), 1f, 10f)
+
+        val temp = FloatArray(16)
+        Matrix.multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
 
         glViewport(0, 0, width, height)
     }

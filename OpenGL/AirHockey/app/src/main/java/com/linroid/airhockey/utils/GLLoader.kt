@@ -1,6 +1,9 @@
 package com.linroid.airhockey.utils
 
+import android.graphics.BitmapFactory
 import android.opengl.GLES20.*
+import android.opengl.GLUtils
+import android.support.annotation.DrawableRes
 import android.support.annotation.IntDef
 import android.support.annotation.RawRes
 import com.linroid.airhockey.App
@@ -76,5 +79,31 @@ object GLLoader {
             return 0
         }
         return program
+    }
+
+    fun texture(@DrawableRes resId: Int): Int {
+        val ids = IntArray(1)
+        glGenTextures(1, ids, 0)
+        if (ids[0] == 0) {
+            Timber.e("glGenTextures failed")
+            return 0
+        }
+        glBindTexture(GL_TEXTURE_2D, ids[0])
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+
+        val options = BitmapFactory.Options()
+        options.inScaled = false
+        val bitmap = BitmapFactory.decodeResource(App.get().resources, resId, options)
+        GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0)
+        bitmap.recycle()
+
+        glGenerateMipmap(GL_TEXTURE_2D)
+
+        glBindTexture(GL_TEXTURE_2D, ids[0])
+
+        return ids[0]
+
     }
 }

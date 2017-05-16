@@ -6,12 +6,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : Activity() {
 
-    private lateinit var render: GLRender
+    private lateinit var render: AirHockeyRender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        render = GLRender(surfaceView)
+        surfaceView.setEGLContextClientVersion(2)
+        render = AirHockeyRender()
         surfaceView.setRenderer(render)
     }
 

@@ -16,7 +16,7 @@ abstract class ShaderProgram(@RawRes vertexResId: Int, @RawRes fragResId: Int) {
     init {
         val vertexShaderId = GLLoader.shader(vertexResId, GL_VERTEX_SHADER)
         val fragShaderId = GLLoader.shader(fragResId, GL_FRAGMENT_SHADER)
-        program = GLLoader.link(vertexShaderId, fragShaderId)
+        program = GLLoader.program(vertexShaderId, fragShaderId)
     }
 
     fun useProgram() {

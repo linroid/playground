@@ -40,7 +40,7 @@ class Table : Shape() {
                 STRIDE)
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
-                textureProgram.aTextureCooridinates,
+                textureProgram.aTextureCooridinatesLocation,
                 TEXTURE_COORDINATES_COMPONENT_COUNT,
                 STRIDE)
     }

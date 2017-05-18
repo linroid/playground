@@ -64,7 +64,7 @@ class GLRender(val surfaceView: GLSurfaceView) : GLSurfaceView.Renderer {
 
         vertexShader = GLLoader.shader(R.raw.simple_vertex_shader, GL_VERTEX_SHADER)
         fragShader = GLLoader.shader(R.raw.simple_fragment_shader, GL_FRAGMENT_SHADER)
-        val program = GLLoader.link(vertexShader, fragShader)
+        val program = GLLoader.program(vertexShader, fragShader)
         glUseProgram(program)
 
         aPositionLocation = glGetAttribLocation(program, "a_Position")

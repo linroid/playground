@@ -55,7 +55,7 @@ object GLLoader {
         return bb
     }
 
-    fun link(vertexShader: Int, fragShader: Int): Int {
+    fun program(vertexShader: Int, fragShader: Int): Int {
         val program = glCreateProgram()
         if (program == 0) {
             Timber.e("Create program failed")

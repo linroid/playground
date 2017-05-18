@@ -20,7 +20,7 @@ class ColorShaderProgram
         aColorLocation = glGetAttribLocation(program, "a_Color")
     }
 
-    fun setUniforms(matrix:FloatArray) {
+    fun setUniforms(matrix: FloatArray) {
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
     }
 }

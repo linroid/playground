@@ -15,14 +15,14 @@ class TextureShaderProgram
 
     // attribute
     val aPositionLocation: Int
-    val aTextureCooridinates: Int
+    val aTextureCooridinatesLocation: Int
 
     init {
         uMatrixLocation = glGetUniformLocation(program, "u_Matrix")
         uTextureUnitLocation = glGetUniformLocation(program, "u_TextureUnit")
 
         aPositionLocation = glGetAttribLocation(program, "a_Position")
-        aTextureCooridinates = glGetAttribLocation(program, "a_TextureCoordinates")
+        aTextureCooridinatesLocation = glGetAttribLocation(program, "a_TextureCoordinates")
     }
 
     fun setUniforms(matrix: FloatArray, textureId: Int) {

@@ -6,25 +6,33 @@ package com.linroid.airhockey.utils
  */
 class Geometry {
 
-    class Point(val x: Float,
-                val y: Float,
-                val z: Float) {
+    data class Point(val x: Float,
+                     val y: Float,
+                     val z: Float) {
 
         fun translateY(offset: Float): Point {
             return Point(x, y + offset, z)
         }
     }
 
-    class Circle(val point: Point,
-                 val radius: Float) {
+    // 圆
+    data class Circle(val center: Point,
+                      val radius: Float) {
 
         fun scale(scale: Float): Circle {
-            return Circle(point, radius * scale)
+            return Circle(center, radius * scale)
         }
     }
 
-    class Cylinder(val point: Point,
-                   val radius: Float,
-                   val height: Float) {
+    // 圆柱
+    data class Cylinder(val center: Point,
+                        val radius: Float,
+                        val height: Float)
+
+    interface DrawCommand {
+        fun draw()
     }
+
+    data class GeneratedData(val vertexData: FloatArray, val drawList: List<DrawCommand>)
+
 }

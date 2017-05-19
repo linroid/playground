@@ -1,25 +1,22 @@
 package com.linroid.airhockey.shape
 
-import com.linroid.airhockey.program.ColorShaderProgram
 import com.linroid.airhockey.data.VertexArray
-import android.opengl.GLES20.*
+import com.linroid.airhockey.program.ColorShaderProgram
 import com.linroid.airhockey.utils.Geometry
-import com.linroid.airhockey.utils.Sizeof
 
 /**
  * @author linroid <linroid@gmail.com>
- * @since 16/05/2017
+ * @since 19/05/2017
  */
-class Mallet(val radius: Float,
-             val height: Float,
-             val numPoints: Int) : Shape() {
-
+class Puck(radius: Float,
+           val height: Float,
+           numPoints: Int) : Shape() {
     private val POSITION_COMPONENT_COUNT = 3
     private val puckData: Geometry.GeneratedData
     private val vertexArray: VertexArray
 
     init {
-        puckData = ObjectBuilder.createMallet(Geometry.Point(0f, 0f, 0f), radius, height, numPoints)
+        puckData = ObjectBuilder.createPuck(Geometry.Cylinder(Geometry.Point(0f, 0f, 0f), radius, height), numPoints)
         vertexArray = VertexArray(puckData.vertexData)
     }
 
@@ -32,4 +29,5 @@ class Mallet(val radius: Float,
             command.draw()
         }
     }
+
 }

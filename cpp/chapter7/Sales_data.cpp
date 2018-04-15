@@ -1,3 +1,0 @@
-struct Sales_data {
-
-};

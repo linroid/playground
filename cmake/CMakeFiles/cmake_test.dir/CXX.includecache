@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/linroid/Source/cmake/main.cc
+iostream
+-
+math/math.h
+/Users/linroid/Source/cmake/math/math.h
+math.h
+-
+
+/Users/linroid/Source/cmake/math/math.h
+
+math/math.h
+

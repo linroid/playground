@@ -1,0 +1,5 @@
+/Users/linroid/Source/cmake/build/bin/cmake_test
+/Users/linroid/Source/cmake/build/include/config.h
+/Users/linroid/Source/cmake/build/include/config.h
+/Users/linroid/Source/cmake/build/bin/libmath_lib.a
+/Users/linroid/Source/cmake/build/include/math.h

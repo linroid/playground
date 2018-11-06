@@ -3,6 +3,8 @@
 #include <vector>
 #include "vulkan_wrapper/vulkan_wrapper.h"
 #include "log.h"
+#include <android_native_app_glue.h>
+#include <set>
 
 bool initialized_ = false;
 VkInstance instance;
@@ -11,10 +13,40 @@ uint32_t queueFamilyIndex;
 VkDevice device;
 VkQueue graphicsQueue;
 VkSurfaceKHR surface;
-
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
 std::vector<const char *> validationLayers = {
         "VK_LAYER_LUNARG_standard_validation"
 };
+std::vector<const char *> instance_extensions = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
+};
+std::vector<const char *> device_extensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
+    SwapChainSupportDetails details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+    uint32_t formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+    if (formatCount > 0) {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+    }
+    uint32_t presentModesCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModesCount, nullptr);
+    if (presentModesCount > 0) {
+        details.presentModes.resize(presentModesCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModesCount, details.presentModes.data());
+    }
+    LOGI("querySwapChainSupport formatCount=%d, presentModelsCount=%d", formatCount, presentModesCount);
+    return details;
+}
 
 const bool enableValidatorLayer = true;
 //#if NDEBUG
@@ -45,6 +77,10 @@ int findDeviceQueueFamily(VkPhysicalDevice device);
 void createLogicDevice();
 
 void destroy();
+
+void createWindow(ANativeWindow *pWindow);
+
+bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
 void android_main(struct android_app *app) {
     LOGI("android_main");
@@ -84,10 +120,24 @@ void initialize(android_app *app) {
     pickPhysicalDevice();
     createLogicDevice();
     vkGetDeviceQueue(device, queueFamilyIndex, 0, &graphicsQueue);
+    createWindow(app->window);
     destroy();
 }
 
+void createWindow(ANativeWindow *window) {
+    VkAndroidSurfaceCreateInfoKHR createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    createInfo.pNext = nullptr;
+    createInfo.flags = 0;
+    createInfo.window = window;
+    if (vkCreateAndroidSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS) {
+        LOGE("create android surface khr failed");
+        exit(-1);
+    }
+}
+
 void destroy() {
+    vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
@@ -180,9 +230,31 @@ bool isDeviceSuitable(VkPhysicalDevice device) {
     vkGetPhysicalDeviceFeatures(device, &features);
     LOGD("check device: %s, deviceType=%d, geometryShader=%d", properties.deviceName,
          properties.deviceType, features.geometryShader);
+    if (!checkDeviceExtensionSupport(device)) {
+        return false;
+    }
+    SwapChainSupportDetails details = querySwapChainSupport(device);
+    if (details.formats.empty() || details.presentModes.empty()) {
+        return false;
+    }
     return (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU or
             properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) &&
            features.geometryShader;
+}
+
+bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<const char *> required_extensions(device_extensions.begin(), device_extensions.end());
+
+    for (const auto &extension : availableExtensions) {
+        required_extensions.erase(extension.extensionName);
+    }
+
+    return required_extensions.empty();
 }
 
 void setDebugCallback() {
@@ -213,11 +285,10 @@ void createInstance() {
     createInfo.pApplicationInfo = &appInfo;
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pNext = nullptr;
-    createInfo.enabledExtensionCount = 0;
-    createInfo.ppEnabledExtensionNames = nullptr;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(instance_extensions.size());
+    createInfo.ppEnabledExtensionNames = instance_extensions.data();
     createInfo.enabledLayerCount = 0;
     createInfo.ppEnabledLayerNames = nullptr;
-
 
     int ret = vkCreateInstance(&createInfo, nullptr, &instance);
     if (ret != VK_SUCCESS) {

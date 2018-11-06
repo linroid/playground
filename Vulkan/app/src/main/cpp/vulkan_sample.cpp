@@ -7,12 +7,16 @@
 bool initialized_ = false;
 VkInstance instance;
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-int queueFamilyIndex = -1;
+uint32_t queueFamilyIndex;
+VkDevice device;
+VkQueue graphicsQueue;
+VkSurfaceKHR surface;
 
 std::vector<const char *> validationLayers = {
         "VK_LAYER_LUNARG_standard_validation"
 };
 
+const bool enableValidatorLayer = true;
 //#if NDEBUG
 //const bool enableValidatorLayer = true;
 //#else
@@ -36,9 +40,11 @@ void pickPhysicalDevice();
 
 bool isDeviceSuitable(VkPhysicalDevice device);
 
-int find_device_queue_family(VkPhysicalDevice device);
+int findDeviceQueueFamily(VkPhysicalDevice device);
 
 void createLogicDevice();
+
+void destroy();
 
 void android_main(struct android_app *app) {
     LOGI("android_main");
@@ -77,23 +83,57 @@ void initialize(android_app *app) {
     setDebugCallback();
     pickPhysicalDevice();
     createLogicDevice();
+    vkGetDeviceQueue(device, queueFamilyIndex, 0, &graphicsQueue);
+    destroy();
+}
+
+void destroy() {
+    vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
 
 void createLogicDevice() {
+    LOGI("createLogicDevice");
+    queueFamilyIndex = static_cast<uint32_t>(findDeviceQueueFamily(physicalDevice));
+    VkDeviceQueueCreateInfo deviceQueueCreateInfo = {};
+    deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+    deviceQueueCreateInfo.queueCount = 1;
+    deviceQueueCreateInfo.pNext = nullptr;
+    float queuePriority = 1.0f;
+    deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
 
+    VkPhysicalDeviceFeatures deviceFeatures = {};
+
+    VkDeviceCreateInfo deviceCreateInfo = {};
+    deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+    deviceCreateInfo.enabledExtensionCount = 0;
+    if (enableValidatorLayer) {
+        deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
+    } else {
+        deviceCreateInfo.enabledLayerCount = 0;
+    }
+
+    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
+        LOGE("vkCreateDevice failed");
+        exit(-1);
+    }
 }
 
-int find_device_queue_family(VkPhysicalDevice device) {
+int findDeviceQueueFamily(VkPhysicalDevice device) {
     uint32_t queueFamilyCount;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
     LOGD("queue family count: %d", queueFamilyCount);
     std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount,
                                              queueFamilies.data());
     int i = 0;
     for (const auto &queueFamily: queueFamilies) {
         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            LOGI("found queue family %d", i);
             return i;
         }
     }
@@ -123,23 +163,26 @@ void pickPhysicalDevice() {
             break;
         }
     }
-    if (physicalDevice == nullptr) {
+    if (physicalDevice == VK_NULL_HANDLE) {
         LOGE("no device suitable");
         exit(-1);
     }
 }
 
 bool isDeviceSuitable(VkPhysicalDevice device) {
-    if (find_device_queue_family(device) == -1) {
+    if (findDeviceQueueFamily(device) == -1) {
         return false;
     }
     VkPhysicalDeviceProperties properties;
-    LOGD("check device: %s", properties.deviceName);
     vkGetPhysicalDeviceProperties(device, &properties);
 
     VkPhysicalDeviceFeatures features;
     vkGetPhysicalDeviceFeatures(device, &features);
-    return properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && features.geometryShader;
+    LOGD("check device: %s, deviceType=%d, geometryShader=%d", properties.deviceName,
+         properties.deviceType, features.geometryShader);
+    return (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU or
+            properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) &&
+           features.geometryShader;
 }
 
 void setDebugCallback() {

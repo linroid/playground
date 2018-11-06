@@ -1,0 +1,23 @@
+{
+  "buildFiles": [
+    "/Users/linroid/Library/Android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/Users/linroid/Source/steps/vulkan/vulkan_android/app/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/linroid/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/debug/x86_64 --target clean"
+  ],
+  "libraries": {
+    "native_app_glue-Debug-x86_64": {
+      "artifactName": "native_app_glue",
+      "buildCommand": "/Users/linroid/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/debug/x86_64 --target native_app_glue",
+      "abi": "x86_64",
+      "output": "/Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/debug/x86_64/libnative_app_glue.a"
+    },
+    "vulkan_sample-Debug-x86_64": {
+      "artifactName": "vulkan_sample",
+      "buildCommand": "/Users/linroid/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/debug/x86_64 --target vulkan_sample",
+      "abi": "x86_64",
+      "output": "/Users/linroid/Source/steps/vulkan/vulkan_android/app/build/intermediates/cmake/debug/obj/x86_64/libvulkan_sample.so"
+    }
+  }
+}

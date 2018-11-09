@@ -1,4 +1,0 @@
-/Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/rebuild_cache.dir
-/Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/edit_cache.dir
-/Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/vulkan_sample.dir
-/Users/linroid/Source/steps/vulkan/vulkan_android/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/native_app_glue.dir

@@ -34,6 +34,8 @@ add_library(vulkan_sample
         SHARED
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.h
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
+        src/main/cpp/vulkan_wrapper/android_util.h
+        src/main/cpp/vulkan_wrapper/android_util.cpp
         ${CPP_SRCS} )
 target_include_directories(vulkan_sample PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
 

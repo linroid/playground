@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/linroid/Source/steps/vulkan/vulkan_android/app/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/linroid/Source/steps/vulkan/vulkan_android/app/src/debug/shaders"/></dataSet></merger>

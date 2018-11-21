@@ -30,8 +30,9 @@ VkExtent2D extent;
 VkRenderPass renderPass = VK_NULL_HANDLE;
 VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 VkPipeline pipeline = VK_NULL_HANDLE;
+VkCommandPool commandPool = VK_NULL_HANDLE;
 std::vector<VkFramebuffer> frameBuffers;
-VkCommandPool commandPool;
+std::vector<VkCommandBuffer> commandBuffers;
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
     LOGI("querySwapChainSupport");
@@ -112,7 +113,8 @@ void initialize(android_app *app) {
     createRenderPass();
     createGraphicsPipeline();
     createFrameBuffers();
-    crateCommandPool();
+    createCommandPool();
+    createCommandBuffers();
     destroy();
 }
 
@@ -152,7 +154,7 @@ void createRenderPass() {
             .attachment = 0,
             .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     };
-    
+
     VkSubpassDescription subpassDescription = {
             .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
             .colorAttachmentCount = 1,
@@ -166,7 +168,7 @@ void createRenderPass() {
             .pSubpasses = &subpassDescription
     };
     CALL_VK(vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &renderPass));
-    
+
 }
 
 void createGraphicsPipeline() {
@@ -183,7 +185,7 @@ void createGraphicsPipeline() {
 //    CALL_VK(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo,
 //                                   nullptr, &gfxPipeline.layout_));
     LOGD("createGraphicsPipeline");
-    
+
     VkShaderModule vertexShader, fragmentShader;
     CALL_VK(loadShaderFromAssets(app_context, "shaders/triangle.vert.spv", device, &vertexShader, VERTEX_SHADER));
     CALL_VK(loadShaderFromAssets(app_context, "shaders/triangle.frag.spv", device, &fragmentShader, FRAGMENT_SHADER));
@@ -212,7 +214,7 @@ void createGraphicsPipeline() {
             .vertexAttributeDescriptionCount = 0,
             .pVertexAttributeDescriptions = nullptr
     };
-    
+
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
             .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
             .primitiveRestartEnable =VK_FALSE
@@ -225,12 +227,12 @@ void createGraphicsPipeline() {
             .maxDepth = 1.0F,
             .minDepth = 0.0F
     };
-    
+
     VkRect2D rect = {
             .offset = {0, 0},
             .extent = extent
     };
-    
+
     VkPipelineViewportStateCreateInfo viewportCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
             .pNext = nullptr,
@@ -272,7 +274,7 @@ void createGraphicsPipeline() {
             .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
             .alphaBlendOp = VK_BLEND_OP_ADD
     };
-    
+
     VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
             .logicOpEnable = VK_FALSE,
@@ -284,7 +286,7 @@ void createGraphicsPipeline() {
             .blendConstants[2] = 0.0f,
             .blendConstants[3] = 0.0f,
     };
-    
+
     VkDynamicState dynamicStates[] = {
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_LINE_WIDTH
@@ -294,7 +296,7 @@ void createGraphicsPipeline() {
             .dynamicStateCount = 2,
             .pDynamicStates = dynamicStates
     };
-    
+
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
             .setLayoutCount = 0,
@@ -303,7 +305,7 @@ void createGraphicsPipeline() {
             .pPushConstantRanges = nullptr
     };
     CALL_VK(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout))
-    
+
     VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
             .stageCount = 2,
@@ -322,14 +324,15 @@ void createGraphicsPipeline() {
             .basePipelineHandle = VK_NULL_HANDLE,
             .basePipelineIndex = -1
     };
-    
+
     CALL_VK(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &pipeline));
     vkDestroyShaderModule(device, vertexShader, nullptr);
     vkDestroyShaderModule(device, fragmentShader, nullptr);
-    
+
 }
 
 void createFrameBuffers() {
+    LOGD("createFrameBuffers");
     frameBuffers.resize(imageViews.size());
     for (int i = 0; i < imageViews.size(); ++i) {
         VkImageView colorAttachments = imageViews[i];
@@ -346,26 +349,62 @@ void createFrameBuffers() {
     }
 }
 
-void crateCommandPool() {
-
+void createCommandPool() {
+    LOGD("createCommandPool");
+    VkCommandPoolCreateInfo commandPoolCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .queueFamilyIndex = queueFamilyIndex,
+            .flags = 0
+    };
+    CALL_VK(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &commandPool));
 }
 
-void createSurface(ANativeWindow *window) {
-    LOGI("create window");
-    VkAndroidSurfaceCreateInfoKHR createInfo = {
-            .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-            .pNext = nullptr,
-            .flags = 0,
-            .window = window,
+
+void createCommandBuffers() {
+    LOGD("createCommandBuffers, size=%ld", frameBuffers.size());
+    commandBuffers.resize(frameBuffers.size());
+    VkCommandBufferAllocateInfo allocateInfo = {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .commandPool = commandPool,
+            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            .commandBufferCount = static_cast<uint32_t>(frameBuffers.size()),
+            .pNext = nullptr
     };
-    if (vkCreateAndroidSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS) {
-        LOGE("create android surface khr failed");
-        exit(-1);
+    CALL_VK(vkAllocateCommandBuffers(device, &allocateInfo, commandBuffers.data()));
+
+    for (int i = 0; i < commandBuffers.size(); ++i) {
+        VkCommandBufferBeginInfo bufferBeginInfo = {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                .pNext = nullptr,
+                .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
+                .pInheritanceInfo = nullptr
+        };
+        CALL_VK(vkBeginCommandBuffer(commandBuffers[i], &bufferBeginInfo));
+
+        VkClearValue clearColor = {
+                .color.float32 = {0.0f, 0.0f, 0.0f, 1.0f}
+        };
+        VkRenderPassBeginInfo renderPassBeginInfo = {
+                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                .renderPass = renderPass,
+                .framebuffer = frameBuffers[i],
+                .renderArea.offset = {0, 0},
+                .renderArea.extent = extent,
+                .clearValueCount = 1,
+                .pClearValues = &clearColor
+        };
+
+        vkCmdBeginRenderPass(commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+        vkCmdEndRenderPass(commandBuffers[i]);
+        CALL_VK(vkEndCommandBuffer(commandBuffers[i]));
     }
 }
 
 void destroy() {
     LOGD("destroy");
+    vkDestroyCommandPool(device, commandPool, nullptr);
     for (auto frameBuffer : frameBuffers) {
         vkDestroyFramebuffer(device, frameBuffer, nullptr);
     }
@@ -408,7 +447,7 @@ void createDevice() {
         LOGE("no device suitable");
         exit(-1);
     }
-    
+
     LOGD("createDevice");
     queueFamilyIndex = static_cast<uint32_t>(findDeviceQueueFamily(physicalDevice));
     VkDeviceQueueCreateInfo deviceQueueCreateInfo = {};
@@ -421,9 +460,9 @@ void createDevice() {
             1.0f,
     };
     deviceQueueCreateInfo.pQueuePriorities = priorities;
-    
+
     VkPhysicalDeviceFeatures deviceFeatures = {};
-    
+
     VkDeviceCreateInfo deviceCreateInfo = {};
     deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
     deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
@@ -436,13 +475,28 @@ void createDevice() {
     } else {
         deviceCreateInfo.enabledLayerCount = 0;
     }
-    
+
     if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
         LOGE("vkCreateDevice failed");
         exit(-1);
     }
     vkGetDeviceQueue(device, queueFamilyIndex, 0, &graphicsQueue);
 }
+
+void createSurface(ANativeWindow *window) {
+    LOGI("create window");
+    VkAndroidSurfaceCreateInfoKHR createInfo = {
+            .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+            .pNext = nullptr,
+            .flags = 0,
+            .window = window,
+    };
+    if (vkCreateAndroidSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS) {
+        LOGE("create android surface khr failed");
+        exit(-1);
+    }
+}
+
 
 int findDeviceQueueFamily(VkPhysicalDevice device) {
     uint32_t queueFamilyCount;
@@ -467,7 +521,7 @@ bool isDeviceSuitable(VkPhysicalDevice device) {
     }
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(device, &properties);
-    
+
     VkPhysicalDeviceFeatures features;
     vkGetPhysicalDeviceFeatures(device, &features);
     LOGD("check device: %s, deviceType=%d, geometryShader=%d", properties.deviceName,
@@ -518,7 +572,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
                                       std::min(capabilities.maxImageExtent.width, actualExtent.width));
         actualExtent.height = std::max(capabilities.minImageExtent.height,
                                        std::min(capabilities.maxImageExtent.height, actualExtent.height));
-        
+
         return actualExtent;
     };
 }
@@ -596,7 +650,7 @@ void setDebugCallback() {
         LOGI("%s", extension.extensionName);
     }
     checkValidatorLayerSupport();
-    
+
 }
 
 void createInstance() {
@@ -606,7 +660,7 @@ void createInstance() {
     appInfo.pEngineName = "Hello Vulkan";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    
+
     VkInstanceCreateInfo createInfo = {};
     createInfo.pApplicationInfo = &appInfo;
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -615,7 +669,7 @@ void createInstance() {
     createInfo.ppEnabledExtensionNames = instance_extensions.data();
     createInfo.enabledLayerCount = 0;
     createInfo.ppEnabledLayerNames = nullptr;
-    
+
     int ret = vkCreateInstance(&createInfo, nullptr, &instance);
     if (ret != VK_SUCCESS) {
         LOGE("vkCreateInstance failed: %d", ret);
@@ -636,7 +690,7 @@ bool checkValidatorLayerSupport() {
     for (auto layer: layers) {
         LOGI("name=%s, description=%s", layer.layerName, layer.description);
     }
-    
+
     for (auto name: validation_layers) {
         bool layerFound = false;
         for (auto &layer: layers) {

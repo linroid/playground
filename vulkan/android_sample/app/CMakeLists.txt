@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-set(LIB_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
+set(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
 
 message(STATUS "LIB_PATH: ${LIB_PATH}")
 
@@ -23,7 +23,7 @@ add_library(native_app_glue STATIC
         ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
 # now build app's shared lib
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -Wall -Werror -DVK_USE_PLATFORM_ANDROID_KHR")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -Wall -Werror -Wmissing-braces -DVK_USE_PLATFORM_ANDROID_KHR")
 
 # Export ANativeActivity_onCreate(),
 # Refer to: https://github.com/android-ndk/ndk/issues/381.
@@ -36,10 +36,10 @@ add_library(vulkan_sample
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
         src/main/cpp/vulkan_wrapper/android_util.h
         src/main/cpp/vulkan_wrapper/android_util.cpp
-        ${CPP_SRCS} )
+        ${CPP_SRCS})
 target_include_directories(vulkan_sample PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
 
-find_library(log-lib log )
+find_library(log-lib log)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
@@ -53,4 +53,4 @@ target_link_libraries( # Specifies the target library.
         GLESv1_CM
         # Links the target library to the log library
         # included in the NDK.
-        ${log-lib} )
+        ${log-lib})

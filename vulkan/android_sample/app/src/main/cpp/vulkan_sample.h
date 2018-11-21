@@ -4,6 +4,7 @@
 
 #ifndef ANDROID_SAMPLE_VULKAN_SAMPLE_H
 #define ANDROID_SAMPLE_VULKAN_SAMPLE_H
+
 #include "vulkan_wrapper/vulkan_wrapper.h"
 #include "log.h"
 #include <android_native_app_glue.h>
@@ -12,6 +13,7 @@
 #include "vulkan_wrapper/android_util.h"
 #include <stdlib.h>
 #include <vector>
+
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
@@ -65,8 +67,8 @@ void createRenderPass();
 
 void createFrameBuffers();
 
-void crateCommandPool();
+void createCommandPool();
 
-
+void createCommandBuffers();
 
 #endif //ANDROID_SAMPLE_VULKAN_SAMPLE_H

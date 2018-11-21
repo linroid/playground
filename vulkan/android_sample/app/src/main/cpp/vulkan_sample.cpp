@@ -23,6 +23,11 @@ std::vector<const char *> instance_extensions = {
 std::vector<const char *> device_extensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
+const int MAX_FRAMES_IN_FLIGHT = 2;
+std::vector<VkSemaphore> imageAvailableSemaphores;
+std::vector<VkSemaphore> renderFinishedSemaphores;
+std::vector<VkFence> fences;
+int currentFrame = 0;
 
 bool initialized_ = false;
 VkInstance instance;
@@ -48,10 +53,6 @@ VkPipeline pipeline = VK_NULL_HANDLE;
 VkCommandPool commandPool = VK_NULL_HANDLE;
 std::vector<VkFramebuffer> frameBuffers;
 std::vector<VkCommandBuffer> commandBuffers;
-VkSemaphore imageAvailableSemaphore;
-//VkSemaphore renderFinishedSemaphore;
-
-VkFence fence;
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
     LOGI("querySwapChainSupport");
@@ -223,48 +224,53 @@ void initialize(android_app *app) {
 
 void createSemaphores() {
     LOGD("createSemaphores");
+    imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    fences.resize(MAX_FRAMES_IN_FLIGHT);
+
     VkSemaphoreCreateInfo semaphoreCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
             .pNext = nullptr,
     };
-    CALL_VK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &imageAvailableSemaphore))
-//    CALL_VK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderFinishedSemaphore))
-
     VkFenceCreateInfo fenceCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0
+            .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+            .pNext = nullptr
     };
-    CALL_VK(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence));
-    LOGI("fence=%p", fence);
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
+        CALL_VK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &imageAvailableSemaphores[i]));
+        CALL_VK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderFinishedSemaphores[i]));
+        CALL_VK(vkCreateFence(device, &fenceCreateInfo, nullptr, &fences[i]));
+    }
+
     initialized_ = true;
 }
 
 void drawFrame() {
+    CALL_VK(vkWaitForFences(device, 1, &fences[currentFrame], VK_TRUE, INT64_MAX));
     uint32_t imageIndex;
-    CALL_VK(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex));
-    LOGD("drawFrame: %d", imageIndex);
-    CALL_VK(vkResetFences(device, 1, &fence));
+    CALL_VK(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE,
+                                  &imageIndex));
+    LOGD("drawFrame[%d]: imageIndex=%d", currentFrame, imageIndex);
+    CALL_VK(vkResetFences(device, 1, &fences[currentFrame]));
     VkPipelineStageFlags waitStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     VkSubmitInfo submitInfo = {
             .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores = &imageAvailableSemaphore,
+            .pWaitSemaphores = &imageAvailableSemaphores[currentFrame],
             .pWaitDstStageMask = &waitStageFlags,
             .commandBufferCount= 1,
             .pCommandBuffers = &commandBuffers[imageIndex],
             .signalSemaphoreCount = 0,
             .pSignalSemaphores = nullptr,
     };
-    CALL_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence));
-    CALL_VK(vkWaitForFences(device, 1, &fence, VK_TRUE, 100000000));
-    LOGI("Drawing frames......");
+    CALL_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fences[currentFrame]));
     VkResult result;
     VkPresentInfoKHR presentInfo = {
             .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
             .pNext = nullptr,
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores = nullptr,
+            .pWaitSemaphores = &renderFinishedSemaphores[currentFrame],
             .swapchainCount = 1,
             .pSwapchains=&swapchain,
             .pImageIndices = &imageIndex,
@@ -273,6 +279,7 @@ void drawFrame() {
     CALL_VK(vkQueuePresentKHR(graphicsQueue, &presentInfo));
 //    LOGI("vkQueuePresentKHR: result=%d", result);
     vkQueueWaitIdle(graphicsQueue);
+    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 bool isVulkanReady() {
@@ -634,6 +641,11 @@ void createCommandBuffers() {
 
 void destroyVulkan() {
     LOGD("destroyVulkan");
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(device, fences[i], nullptr);
+    }
     vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
     vkDestroyCommandPool(device, commandPool, nullptr);
     for (auto frameBuffer : frameBuffers) {

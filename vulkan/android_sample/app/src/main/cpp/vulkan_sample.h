@@ -20,17 +20,6 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR> presentModes;
 };
 
-std::vector<const char *> validation_layers = {
-        "VK_LAYER_LUNARG_standard_validation"
-};
-std::vector<const char *> instance_extensions = {
-        VK_KHR_SURFACE_EXTENSION_NAME,
-        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
-};
-std::vector<const char *> device_extensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
-
 void handle_cmd(struct android_app *app, int32_t cmd);
 
 void initialize(android_app *app);
@@ -51,7 +40,7 @@ void createDevice();
 
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
 
-void destroy();
+void destroyVulkan();
 
 void createSurface(ANativeWindow *pWindow);
 
@@ -67,8 +56,16 @@ void createRenderPass();
 
 void createFrameBuffers();
 
+void createVertexBuffers();
+
 void createCommandPool();
 
 void createCommandBuffers();
+
+void createSemaphores();
+
+void drawFrame();
+
+bool isVulkanReady();
 
 #endif //ANDROID_SAMPLE_VULKAN_SAMPLE_H

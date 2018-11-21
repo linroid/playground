@@ -215,7 +215,7 @@ void initialize(android_app *app) {
     createRenderPass();
     createGraphicsPipeline();
     createFrameBuffers();
-    createVertexBuffers();
+//    createVertexBuffers();
     createCommandPool();
     createCommandBuffers();
     createSemaphores();
@@ -272,7 +272,7 @@ void drawFrame() {
     };
     CALL_VK(vkQueuePresentKHR(graphicsQueue, &presentInfo));
 //    LOGI("vkQueuePresentKHR: result=%d", result);
-//    vkQueueWaitIdle(graphicsQueue);
+    vkQueueWaitIdle(graphicsQueue);
 }
 
 bool isVulkanReady() {
@@ -348,18 +348,6 @@ void createRenderPass() {
 }
 
 void createGraphicsPipeline() {
-//    memset(&gfxPipeline, 0, sizeof(gfxPipeline));
-    // Create pipeline layout (empty)
-//    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{
-//            .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-//            .pNext = nullptr,
-//            .setLayoutCount = 0,
-//            .pSetLayouts = nullptr,
-//            .pushConstantRangeCount = 0,
-//            .pPushConstantRanges = nullptr,
-//    };
-//    CALL_VK(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo,
-//                                   nullptr, &gfxPipeline.layout_));
     LOGD("createGraphicsPipeline");
 
     VkShaderModule vertexShader, fragmentShader;
@@ -392,6 +380,7 @@ void createGraphicsPipeline() {
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
             .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
             .primitiveRestartEnable =VK_FALSE
     };
@@ -400,11 +389,11 @@ void createGraphicsPipeline() {
             .y = 0.0f,
             .width = (float) extent.width,
             .height = (float) extent.height,
-            .maxDepth = 1.0F,
-            .minDepth = 0.0F
+            .minDepth = 0.0F,
+            .maxDepth = 1.0F
     };
 
-    VkRect2D rect = {
+    VkRect2D scissor = {
             .offset = {0, 0},
             .extent = extent
     };
@@ -415,7 +404,7 @@ void createGraphicsPipeline() {
             .viewportCount = 1,
             .pViewports = &viewport,
             .scissorCount = 1,
-            .pScissors = &rect
+            .pScissors = &scissor
     };
     VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
@@ -462,16 +451,16 @@ void createGraphicsPipeline() {
             .blendConstants[2] = 0.0f,
             .blendConstants[3] = 0.0f,
     };
-
-    VkDynamicState dynamicStates[] = {
-            VK_DYNAMIC_STATE_VIEWPORT,
-            VK_DYNAMIC_STATE_LINE_WIDTH
-    };
-    VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-            .dynamicStateCount = 2,
-            .pDynamicStates = dynamicStates
-    };
+//
+//    VkDynamicState dynamicStates[] = {
+//            VK_DYNAMIC_STATE_VIEWPORT,
+//            VK_DYNAMIC_STATE_LINE_WIDTH
+//    };
+//    VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {
+//            .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+//            .dynamicStateCount = 2,
+//            .pDynamicStates = dynamicStates
+//    };
 
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -493,7 +482,7 @@ void createGraphicsPipeline() {
             .pMultisampleState = &multisampleStateCreateInfo,
             .pDepthStencilState = nullptr,
             .pColorBlendState = &colorBlendStateCreateInfo,
-            .pDynamicState = &dynamicStateCreateInfo,
+//            .pDynamicState = &dynamicStateCreateInfo,
             .layout = pipelineLayout,
             .renderPass = renderPass,
             .subpass = 0,
@@ -602,22 +591,21 @@ void createCommandBuffers() {
             .pNext = nullptr
     };
     CALL_VK(vkAllocateCommandBuffers(device, &allocateInfo, commandBuffers.data()));
-
     for (int i = 0; i < commandBuffers.size(); ++i) {
         VkCommandBufferBeginInfo bufferBeginInfo = {
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
                 .pNext = nullptr,
-//                .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
-                .flags = 0,
+                .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
+//                .flags = 0,
                 .pInheritanceInfo = nullptr
         };
         CALL_VK(vkBeginCommandBuffer(commandBuffers[i], &bufferBeginInfo));
         // transition the display image to color attachment layout
-        setImageLayout(commandBuffers[i], swapchainImages[i],
-                       VK_IMAGE_LAYOUT_UNDEFINED,
-                       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                       VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+//        setImageLayout(commandBuffers[i], swapchainImages[i],
+//                       VK_IMAGE_LAYOUT_UNDEFINED,
+//                       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+//                       VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+//                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
         VkClearValue clearColor = {
                 .color.float32 = {0.0f, 0.34f, 0.90f, 1.0f}
         };
@@ -633,8 +621,8 @@ void createCommandBuffers() {
 
         vkCmdBeginRenderPass(commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkDeviceSize offset = 0;
-        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffer, &offset);
+//        VkDeviceSize offset = 0;
+//        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffer, &offset);
         // Draw Triangle
         vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
         vkCmdEndRenderPass(commandBuffers[i]);

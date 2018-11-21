@@ -13,7 +13,7 @@ enum ShaderType {
     VERTEX_SHADER, FRAGMENT_SHADER
 };
 
-VkResult loadShaderFromAssets(android_app *app, const char *path, VkDevice& device, VkShaderModule *output,
+VkResult loadShaderFromAssets(android_app *app, const char *path, VkDevice &device, VkShaderModule *output,
                               ShaderType shaderType);
 
 #endif //ANDROID_SAMPLE_ANDROID_UTIL_H

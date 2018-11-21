@@ -20,11 +20,9 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR> presentModes;
 };
 
-void handle_cmd(struct android_app *app, int32_t cmd);
+static android_app *app_ctx_;
 
-void initialize(android_app *app);
-
-void terminate();
+void initVulkan(android_app *app);
 
 bool checkValidatorLayerSupport();
 

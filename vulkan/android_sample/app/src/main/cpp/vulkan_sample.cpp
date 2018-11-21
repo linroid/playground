@@ -11,7 +11,6 @@
                         __LINE__);                                    \
     assert(false);                                                    \
   }
-android_app *app_context;
 
 std::vector<const char *> validation_layers = {
         "VK_LAYER_LUNARG_standard_validation"
@@ -169,47 +168,15 @@ const bool enableValidatorLayer = false;
 //const bool enableValidatorLayer = false;
 //#endif
 
-
-void android_main(struct android_app *app) {
-    LOGI("android_main");
-    app_context = app;
-    app->onAppCmd = handle_cmd;
-    int events;
-    android_poll_source *source;
-    do {
-        if (ALooper_pollAll(isVulkanReady() ? 1 : 0, nullptr, &events, (void **) &source) >= 0) {
-            if (source != nullptr) {
-                source->process(app, source);
-            }
-        }
-        if (isVulkanReady()) {
-            drawFrame();
-        }
-    } while (app->destroyRequested == 0);
-}
-
-void handle_cmd(struct android_app *app, int32_t cmd) {
-    switch (cmd) {
-        case APP_CMD_INIT_WINDOW:
-            initialize(app);
-            break;
-        case APP_CMD_TERM_WINDOW:
-            terminate();
-            break;
-        default:
-            LOGI("event not handled: %d", cmd);
-            break;
-    }
-}
-
-void initialize(android_app *app) {
+void initVulkan(android_app *app) {
     if (!InitVulkan()) {
         LOGE("init vulkan falied");
         return;
     }
+    app_ctx_ = app;
     createInstance();
     setDebugCallback();
-    createSurface(app->window);
+    createSurface(app_ctx_->window);
     createDevice();
     createSwapChain();
     createImageViews();
@@ -358,8 +325,8 @@ void createGraphicsPipeline() {
     LOGD("createGraphicsPipeline");
 
     VkShaderModule vertexShader, fragmentShader;
-    CALL_VK(loadShaderFromAssets(app_context, "shaders/triangle.vert.spv", device, &vertexShader, VERTEX_SHADER));
-    CALL_VK(loadShaderFromAssets(app_context, "shaders/triangle.frag.spv", device, &fragmentShader, FRAGMENT_SHADER));
+    CALL_VK(loadShaderFromAssets(app_ctx_, "shaders/triangle.vert.spv", device, &vertexShader, VERTEX_SHADER));
+    CALL_VK(loadShaderFromAssets(app_ctx_, "shaders/triangle.frag.spv", device, &fragmentShader, FRAGMENT_SHADER));
     VkPipelineShaderStageCreateInfo vertexStageCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
@@ -641,6 +608,7 @@ void createCommandBuffers() {
 
 void destroyVulkan() {
     LOGD("destroyVulkan");
+    vkDeviceWaitIdle(device);
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -947,10 +915,4 @@ bool checkValidatorLayerSupport() {
         }
     }
     return true;
-}
-
-void terminate() {
-    vkDeviceWaitIdle(device);
-    destroyVulkan();
-    LOGI("terminate");
 }

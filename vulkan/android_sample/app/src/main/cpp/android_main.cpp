@@ -30,6 +30,8 @@ void handle_cmd(struct android_app *app, int32_t cmd) {
         case APP_CMD_TERM_WINDOW:
             destroyVulkan();
             break;
+        case APP_CMD_WINDOW_RESIZED:
+            recreateSwapChain();
         default:
             LOGI("event not handled: %d", cmd);
             break;

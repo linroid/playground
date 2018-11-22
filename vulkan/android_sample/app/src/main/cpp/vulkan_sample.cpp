@@ -606,32 +606,6 @@ void createCommandBuffers() {
     }
 }
 
-void destroyVulkan() {
-    LOGD("destroyVulkan");
-    vkDeviceWaitIdle(device);
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(device, fences[i], nullptr);
-    }
-    vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
-    vkDestroyCommandPool(device, commandPool, nullptr);
-    for (auto frameBuffer : frameBuffers) {
-        vkDestroyFramebuffer(device, frameBuffer, nullptr);
-    }
-    vkDestroyPipeline(device, pipeline, nullptr);
-    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(device, renderPass, nullptr);
-    for (int i = 0; i < imageViews.size(); ++i) {
-        vkDestroyImageView(device, imageViews[0], nullptr);
-    }
-    vkDestroySwapchainKHR(device, swapchain, nullptr);
-    vkDestroySurfaceKHR(instance, surface, nullptr);
-    vkDestroyDevice(device, nullptr);
-    vkDestroyInstance(instance, nullptr);
-    initialized_ = false;
-}
-
 void createDevice() {
     // enumerate devices
     uint32_t deviceCount;
@@ -890,6 +864,48 @@ void createInstance() {
         }
     }
     LOGI("create vkInstance succeed");
+}
+
+void destroyVulkan() {
+    LOGD("destroyVulkan");
+    vkDeviceWaitIdle(device);
+    cleanSwapChain();
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(device, fences[i], nullptr);
+    }
+
+    vkDestroySurfaceKHR(instance, surface, nullptr);
+    vkDestroyDevice(device, nullptr);
+    vkDestroyInstance(instance, nullptr);
+    initialized_ = false;
+}
+
+void cleanSwapChain() {
+    vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+    vkDestroyCommandPool(device, commandPool, nullptr);
+    for (auto frameBuffer : frameBuffers) {
+        vkDestroyFramebuffer(device, frameBuffer, nullptr);
+    }
+    vkDestroyPipeline(device, pipeline, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    vkDestroyRenderPass(device, renderPass, nullptr);
+    for (int i = 0; i < imageViews.size(); ++i) {
+        vkDestroyImageView(device, imageViews[0], nullptr);
+    }
+    vkDestroySwapchainKHR(device, swapchain, nullptr);
+}
+
+void recreateSwapChain() {
+    vkDeviceWaitIdle(device);
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createGraphicsPipeline();
+    createFrameBuffers();
+    createCommandBuffers();
 }
 
 bool checkValidatorLayerSupport() {

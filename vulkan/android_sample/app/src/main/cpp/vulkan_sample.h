@@ -66,4 +66,8 @@ void drawFrame();
 
 bool isVulkanReady();
 
+void cleanSwapChain();
+
+void recreateSwapChain();
+
 #endif //ANDROID_SAMPLE_VULKAN_SAMPLE_H

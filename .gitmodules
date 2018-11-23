@@ -1,0 +1,3 @@
+[submodule "vulkan/android_sample/upload"]
+	path = vulkan/android_sample/upload
+	url = http://git.code.oa.com/darlingli/UploadModule.git

@@ -13,7 +13,8 @@
 #include "vulkan_wrapper/android_util.h"
 #include <stdlib.h>
 #include <vector>
-
+struct Vetex {
+};
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;

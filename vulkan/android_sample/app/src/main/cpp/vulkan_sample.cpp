@@ -510,7 +510,9 @@ bool MapMemoryTypeToIndex(uint32_t typeBits, VkFlags requirements_mask,
 
 void createVertexBuffers() {
     LOGD("createVertexBuffers");
-    const float vertexData[] = {-1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+    const float vertexData[] = {-1.0f, -1.0f, 0.0f,
+                                1.0f, -1.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f};
     VkBufferCreateInfo createInfo = {
             .sType= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
             .pNext = nullptr,

@@ -12,7 +12,7 @@ VkResult loadShaderFromAssets(android_app *app, const char *path, VkDevice& devi
     AAsset *fp = AAssetManager_open(app->activity->assetManager, path, AASSET_MODE_BUFFER);
     assert(fp);
     LOGI("open %s from assets", path);
-    size_t length = AAsset_getLength(fp);
+    size_t length = static_cast<size_t>(AAsset_getLength(fp));
     LOGI("open succeed, len=%ld", length);
     char *content = new char[length];
     AAsset_read(fp, content, length);

@@ -13,6 +13,7 @@
 #include "vulkan_wrapper/android_util.h"
 #include <stdlib.h>
 #include <vector>
+
 struct Vetex {
 };
 struct SwapChainSupportDetails {
@@ -56,6 +57,10 @@ void createRenderPass();
 void createFrameBuffers();
 
 void createVertexBuffers();
+
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags flags, VkMemoryPropertyFlags properties, VkBuffer &buffer,
+                  VkDeviceMemory &memory);
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 void createCommandPool();
 

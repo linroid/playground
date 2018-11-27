@@ -23,9 +23,11 @@ std::vector<const char *> device_extensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-const float vertexData[] = {0.0f, -0.5f, 1.0f, 0.0f, 0.0f,
-                            0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-                            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f};
+const float vertexData[] = {-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                            0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+                            -0.5f, 0.5f, 1.0f, 1.0f, 1.0f};
+const uint16_t vertexIndices[]{0, 1, 2, 2, 3, 0};
 const int MAX_FRAMES_IN_FLIGHT = 2;
 std::vector<VkSemaphore> imageAvailableSemaphores;
 std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -42,6 +44,8 @@ VkSurfaceKHR surface;
 
 VkBuffer vertexBuffer;
 VkDeviceMemory vertexBufferMemory;
+VkBuffer indexBuffer;
+VkDeviceMemory indexBufferMemory;
 
 VkSwapchainKHR swapchain;
 uint32_t swapchainImageCount;
@@ -190,6 +194,7 @@ void initVulkan(android_app *app) {
     createFrameBuffers();
     createCommandPool();
     createVertexBuffers();
+    createIndexBuffer();
     createCommandBuffers();
     createSemaphores();
 }
@@ -595,22 +600,40 @@ void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
 
 void createVertexBuffers() {
     LOGD("createVertexBuffers");
-
     size_t bufferSize = sizeof(vertexData);
-
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
-    createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                  stagingBuffer, stagingBufferMemory);
     void *data;
     vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, vertexData, sizeof(vertexData));
+    memcpy(data, vertexData, bufferSize);
     vkUnmapMemory(device, stagingBufferMemory);
     createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
     copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+
+void createIndexBuffer() {
+    LOGD("createIndexBuffer");
+    VkDeviceSize bufferSize = sizeof(vertexIndices);
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                 stagingBuffer, stagingBufferMemory);
+    void *data;
+    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, vertexIndices, bufferSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+    copyBuffer(stagingBuffer, indexBuffer, bufferSize);
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
@@ -638,7 +661,6 @@ void createCommandBuffers() {
     CALL_VK(vkAllocateCommandBuffers(device, &allocateInfo, commandBuffers.data()));
     for (int i = 0; i < commandBuffers.size(); ++i) {
         VkCommandBufferBeginInfo bufferBeginInfo = {
-
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
                 .pNext = nullptr,
                 .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
@@ -669,8 +691,10 @@ void createCommandBuffers() {
         vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offset = 0;
         vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffer, &offset);
-        // Draw Triangle
-        vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+        // Draw Rectangle
+        // vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+        vkCmdDrawIndexed(commandBuffers[i], sizeof(vertexIndices) / sizeof(vertexIndices[0]), 1, 0, 0, 0);
         vkCmdEndRenderPass(commandBuffers[i]);
         CALL_VK(vkEndCommandBuffer(commandBuffers[i]));
     }
@@ -940,6 +964,10 @@ void destroyVulkan() {
     LOGD("destroyVulkan");
     vkDestroyBuffer(device, vertexBuffer, nullptr);
     vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+    vkDestroyBuffer(device, indexBuffer, nullptr);
+    vkFreeMemory(device, indexBufferMemory, nullptr);
+
     vkDeviceWaitIdle(device);
     cleanSwapChain();
 

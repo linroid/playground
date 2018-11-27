@@ -58,6 +58,8 @@ void createFrameBuffers();
 
 void createVertexBuffers();
 
+void createIndexBuffer();
+
 void createBuffer(VkDeviceSize size, VkBufferUsageFlags flags, VkMemoryPropertyFlags properties, VkBuffer &buffer,
                   VkDeviceMemory &memory);
 void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

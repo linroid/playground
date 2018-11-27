@@ -6,7 +6,7 @@
 #define ANDROID_SAMPLE_ANDROID_UTIL_H
 
 
-#include "vulkan_wrapper.h"
+#include "vulkan_wrapper/vulkan_wrapper.h"
 #include <android_native_app_glue.h>
 
 enum ShaderType {
@@ -15,5 +15,7 @@ enum ShaderType {
 
 VkResult loadShaderFromAssets(android_app *app, const char *path, VkDevice &device, VkShaderModule *output,
                               ShaderType shaderType);
+
+unsigned char *loadFromAssets(android_app *app, const char *path, size_t &len);
 
 #endif //ANDROID_SAMPLE_ANDROID_UTIL_H

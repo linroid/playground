@@ -19,11 +19,9 @@ aux_source_directory(${LIB_PATH} CPP_SRCS)
 
 # build native_app_glue as a static lib
 set(${CMAKE_C_FLAGS}, "${CMAKE_C_FLAGS}")
-add_library(native_app_glue STATIC
-        ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-
 # now build app's shared lib
 # -Wall -Werror -Wmissing-braces -Wformat
+# -Wno-delete-non-virtual-dtor
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DVK_USE_PLATFORM_ANDROID_KHR")
 
 # Export ANativeActivity_onCreate(),
@@ -31,14 +29,26 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DVK_USE_PLATFORM_ANDROID_K
 set(CMAKE_SHARED_LINKER_FLAGS
         "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 
+set(SHADERC_DIR ${CMAKE_ANDROID_NDK}/sources/third_party/shaderc/)
+add_library(libshaderc STATIC IMPORTED)
+set_target_properties(libshaderc PROPERTIES IMPORTED_LOCATION
+        ${SHADERC_DIR}/libs/c++_static/${CMAKE_ANDROID_ARCH_ABI}/libshaderc.a)
+
+
 add_library(vulkan_sample
         SHARED
+        src/main/cpp/utils/stb_image.h
+        src/main/cpp/utils/android_util.h
+        src/main/cpp/utils/android_util.cpp
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.h
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
-        src/main/cpp/vulkan_wrapper/android_util.h
-        src/main/cpp/vulkan_wrapper/android_util.cpp
         ${CPP_SRCS})
-target_include_directories(vulkan_sample PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
+add_library(native_app_glue STATIC ${CMAKE_ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+target_include_directories(vulkan_sample PRIVATE ${CMAKE_ANDROID_NDK}/sources/android/native_app_glue)
+
+target_include_directories(vulkan_sample PRIVATE $SHADERC_DIR/include)
+include_directories($SHADERC_DIR/include)
+link_directories($SHADERC_DIR/include)
 
 find_library(log-lib log)
 
@@ -52,6 +62,7 @@ target_link_libraries( # Specifies the target library.
         native_app_glue
         EGL
         GLESv1_CM
+        libshaderc
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})

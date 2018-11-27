@@ -1,7 +1,7 @@
 //
 // Created by linroid on 2018/11/21.
 //
-#include "log.h"
+#include "utils/log.h"
 #include "android_main.h"
 #include <android_native_app_glue.h>
 

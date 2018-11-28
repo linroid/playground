@@ -35,7 +35,9 @@ include_directories(${VK_VAL_LAYER_SRC_DIR}/include)
 #set_target_properties(libshaderc PROPERTIES IMPORTED_LOCATION
 #        ${SHADERC_DIR}/libs/c++_static/${CMAKE_ANDROID_ARCH_ABI}/libshaderc.a)
 
-
+add_definitions("-DGLM_FORCE_SIZE_T_LENGTH -DGLM_FORCE_RADIANS")
+# Import the CMakeLists.txt for the glm library
+add_subdirectory(${CPP_PATH}/glm)
 add_library(vulkan_sample
         SHARED
         src/main/cpp/utils/stb_image.h
@@ -63,6 +65,7 @@ target_link_libraries( # Specifies the target library.
         native_app_glue
         EGL
         GLESv1_CM
+        glm_static
         #        libshaderc
         # Links the target library to the log library
         # included in the NDK.

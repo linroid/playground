@@ -10,10 +10,12 @@
 #include <functional>
 #include <stdlib.h>
 #include <vector>
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "vulkan_wrapper/vulkan_wrapper.h"
 #include "utils/log.h"
 #include "utils/android_util.h"
-
 // Vulkan call wrapper
 #define CALL_VK(func)                                                 \
   if (VK_SUCCESS != (func)) {                                         \
@@ -25,15 +27,11 @@
 
 const VkFormat kTexFmt = VK_FORMAT_R8G8B8A8_UNORM;
 
-typedef struct texture_object {
-    VkSampler sampler;
-    VkImage image;
-    VkImageLayout imageLayout;
-    VkDeviceMemory mem;
-    VkImageView view;
-    int32_t tex_width;
-    int32_t tex_height;
-} texture_object;
+struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+};
 
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -73,11 +71,19 @@ void createGraphicsPipeline();
 
 void createRenderPass();
 
+void createDescriptorSetLayout();
+
 void createFrameBuffers();
 
 void createVertexBuffers();
 
 void createIndexBuffer();
+
+void createUniformBuffers();
+
+void createDescriptorPool();
+
+void createDescriptorSets();
 
 void createBuffer(VkDeviceSize size, VkBufferUsageFlags flags, VkMemoryPropertyFlags properties, VkBuffer &buffer,
                   VkDeviceMemory &memory);
@@ -111,6 +117,8 @@ void createCommandBuffers();
 void createSemaphores();
 
 void drawFrame();
+
+void updateUniformBuffer(uint32_t currentImage);
 
 bool isVulkanReady();
 

@@ -10,12 +10,10 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-set(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
-
-message(STATUS "LIB_PATH: ${LIB_PATH}")
-
-include_directories(${LIB_PATH})
-aux_source_directory(${LIB_PATH} CPP_SRCS)
+set(CPP_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
+message(STATUS "LIB_PATH: ${CPP_PATH}")
+include_directories(${CPP_PATH})
+aux_source_directory(${CPP_PATH} CPP_SRCS)
 
 # build native_app_glue as a static lib
 set(${CMAKE_C_FLAGS}, "${CMAKE_C_FLAGS}")
@@ -26,13 +24,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DVK_USE_PLATFORM_ANDROID_K
 
 # Export ANativeActivity_onCreate(),
 # Refer to: https://github.com/android-ndk/ndk/issues/381.
-set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 
-set(SHADERC_DIR ${CMAKE_ANDROID_NDK}/sources/third_party/shaderc/)
-add_library(libshaderc STATIC IMPORTED)
-set_target_properties(libshaderc PROPERTIES IMPORTED_LOCATION
-        ${SHADERC_DIR}/libs/c++_static/${CMAKE_ANDROID_ARCH_ABI}/libshaderc.a)
+# vulkan validator layer
+set(VK_VAL_LAYER_SRC_DIR ${CMAKE_ANDROID_NDK}/sources/third_party/vulkan/src)
+include_directories(${VK_VAL_LAYER_SRC_DIR}/include)
+
+#set(SHADERC_DIR ${CMAKE_ANDROID_NDK}/sources/third_party/shaderc/)
+#add_library(libshaderc STATIC IMPORTED)
+#set_target_properties(libshaderc PROPERTIES IMPORTED_LOCATION
+#        ${SHADERC_DIR}/libs/c++_static/${CMAKE_ANDROID_ARCH_ABI}/libshaderc.a)
 
 
 add_library(vulkan_sample
@@ -46,9 +47,9 @@ add_library(vulkan_sample
 add_library(native_app_glue STATIC ${CMAKE_ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 target_include_directories(vulkan_sample PRIVATE ${CMAKE_ANDROID_NDK}/sources/android/native_app_glue)
 
-target_include_directories(vulkan_sample PRIVATE $SHADERC_DIR/include)
-include_directories($SHADERC_DIR/include)
-link_directories($SHADERC_DIR/include)
+#target_include_directories(vulkan_sample PRIVATE $SHADERC_DIR/include)
+#include_directories($SHADERC_DIR/include)
+#link_directories($SHADERC_DIR/include)
 
 find_library(log-lib log)
 
@@ -62,7 +63,7 @@ target_link_libraries( # Specifies the target library.
         native_app_glue
         EGL
         GLESv1_CM
-        libshaderc
+        #        libshaderc
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})

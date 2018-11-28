@@ -29,10 +29,10 @@ static std::vector<const char *> device_extensions = {
 #ifdef ENABLE_VALIDATOR_LAYER
 VkDebugReportCallbackEXT debugReportCallback;
 #endif
-const float vertexData[] = {-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                            0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-                            -0.5f, 0.5f, 1.0f, 1.0f, 1.0f};
+const float vertexData[] = {-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                            0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                            -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 const uint16_t vertexIndices[]{0, 1, 2, 2, 3, 0};
 const int MAX_FRAMES_IN_FLIGHT = 2;
 std::vector<VkSemaphore> imageAvailableSemaphores;
@@ -351,10 +351,19 @@ void createDescriptorSetLayout() {
             .stageFlags = VK_SHADER_STAGE_VERTEX_BIT
     };
 
+    VkDescriptorSetLayoutBinding samplerLayoutBinding = {
+            .binding = 1,
+            .descriptorCount = 1,
+            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .pImmutableSamplers = nullptr,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+    };
+    VkDescriptorSetLayoutBinding bindings[] = {uboLayoutBinding, samplerLayoutBinding};
+
     VkDescriptorSetLayoutCreateInfo layoutInfo = {
             .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-            .bindingCount = 1,
-            .pBindings = &uboLayoutBinding
+            .bindingCount = 2,
+            .pBindings = bindings
     };
 
     CALL_VK(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout));
@@ -389,7 +398,7 @@ void createGraphicsPipeline() {
     VkVertexInputBindingDescription bindingDescription[]
             = {{
                        .binding = 0,
-                       .stride = 5 * sizeof(float),
+                       .stride = 7 * sizeof(float),
                        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
                }};
     VkVertexInputAttributeDescription attributeDescriptions[]
@@ -404,13 +413,19 @@ void createGraphicsPipeline() {
                        .location = 1,
                        .format = VK_FORMAT_R32G32B32_SFLOAT,
                        .offset = 2 * sizeof(float)
+               },
+               {
+                       .binding = 0,
+                       .location = 2,
+                       .format = VK_FORMAT_R32G32_SFLOAT,
+                       .offset = 5 * sizeof(float)
                }};
 
     VkPipelineVertexInputStateCreateInfo vertexInputStage = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
             .vertexBindingDescriptionCount = 1,
             .pVertexBindingDescriptions = bindingDescription,
-            .vertexAttributeDescriptionCount = 2,
+            .vertexAttributeDescriptionCount = 3,
             .pVertexAttributeDescriptions = attributeDescriptions
     };
 
@@ -705,15 +720,22 @@ void createUniformBuffers() {
 }
 
 void createDescriptorPool() {
-    VkDescriptorPoolSize poolSize = {};
-    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSize.descriptorCount = static_cast<uint32_t>(swapchainImages.size());
-
+    uint32_t imageCount = static_cast<uint32_t>(swapchainImages.size());
+    VkDescriptorPoolSize poolSizes[] = {
+            {
+                    .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                    .descriptorCount = imageCount
+            },
+            {
+                    .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                    .descriptorCount = imageCount
+            }
+    };
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 1;
-    poolInfo.pPoolSizes = &poolSize;
-    poolInfo.maxSets = static_cast<uint32_t>(swapchainImages.size());;
+    poolInfo.poolSizeCount = 2;
+    poolInfo.pPoolSizes = poolSizes;
+    poolInfo.maxSets = imageCount;
     CALL_VK(vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool));
 }
 
@@ -735,17 +757,33 @@ void createDescriptorSets() {
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 
-        VkWriteDescriptorSet descriptorWrite = {};
-        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrite.dstSet = descriptorSets[i];
-        descriptorWrite.dstBinding = 0;
-        descriptorWrite.dstArrayElement = 0;
-        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptorWrite.descriptorCount = 1;
-        descriptorWrite.pBufferInfo = &bufferInfo;
-        descriptorWrite.pImageInfo = nullptr; // Optional
-        descriptorWrite.pTexelBufferView = nullptr; // Optional
-        vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
+        VkDescriptorImageInfo imageInfo = {};
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = textureImageView;
+        imageInfo.sampler = textureSampler;
+
+        VkWriteDescriptorSet descriptorWrites[]
+                = {{
+                           .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                           .dstSet = descriptorSets[i],
+                           .dstBinding = 0,
+                           .dstArrayElement = 0,
+                           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                           .descriptorCount = 1,
+                           .pBufferInfo = &bufferInfo,
+                           .pImageInfo = &imageInfo,
+                           .pTexelBufferView = nullptr,
+                   },
+                   {
+                           .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                           .dstSet = descriptorSets[i],
+                           .dstBinding = 1,
+                           .dstArrayElement = 0,
+                           .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                           .descriptorCount = 1,
+                           .pImageInfo = &imageInfo,
+                   }};
+        vkUpdateDescriptorSets(device, 2, descriptorWrites, 0, nullptr);
     }
 }
 
@@ -944,7 +982,8 @@ void createCommandBuffers() {
         // Draw Rectangle
         // vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 
-        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
+                                &descriptorSets[i], 0, nullptr);
         vkCmdDrawIndexed(commandBuffers[i], sizeof(vertexIndices) / sizeof(vertexIndices[0]), 1, 0, 0, 0);
         vkCmdEndRenderPass(commandBuffers[i]);
         CALL_VK(vkEndCommandBuffer(commandBuffers[i]));

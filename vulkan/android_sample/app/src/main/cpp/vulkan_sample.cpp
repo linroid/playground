@@ -280,8 +280,7 @@ void updateUniformBuffer(uint32_t currentImage) {
     UniformBufferObject ubo = {};
     ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.proj = glm::perspective(glm::radians(45.0f), extent.width / (float) extent.height, 0.1f,
-                                10.0f);
+    ubo.proj = glm::perspective(glm::radians(45.0f), extent.width / (float) extent.height, 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
     void *data;
@@ -308,6 +307,8 @@ void createRenderPass() {
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
             .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
             .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
     };
@@ -356,7 +357,7 @@ void createDescriptorSetLayout() {
             .descriptorCount = 1,
             .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
             .pImmutableSamplers = nullptr,
-            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
     };
     VkDescriptorSetLayoutBinding bindings[] = {uboLayoutBinding, samplerLayoutBinding};
 
@@ -395,12 +396,12 @@ void createGraphicsPipeline() {
             fragStageCreateInfo
     };
 
-    VkVertexInputBindingDescription bindingDescription[]
-            = {{
-                       .binding = 0,
-                       .stride = 7 * sizeof(float),
-                       .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
-               }};
+    VkVertexInputBindingDescription bindingDescription
+            = {
+                    .binding = 0,
+                    .stride = 7 * sizeof(float),
+                    .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+            };
     VkVertexInputAttributeDescription attributeDescriptions[]
             = {{
                        .binding = 0,
@@ -424,15 +425,15 @@ void createGraphicsPipeline() {
     VkPipelineVertexInputStateCreateInfo vertexInputStage = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
             .vertexBindingDescriptionCount = 1,
-            .pVertexBindingDescriptions = bindingDescription,
-            .vertexAttributeDescriptionCount = 3,
+            .pVertexBindingDescriptions = &bindingDescription,
+            .vertexAttributeDescriptionCount = sizeof(attributeDescriptions) / sizeof(attributeDescriptions[0]),
             .pVertexAttributeDescriptions = attributeDescriptions
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
             .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-            .primitiveRestartEnable =VK_FALSE
+            .primitiveRestartEnable = VK_FALSE
     };
     VkViewport viewport = {
             .x = 0.0f,
@@ -467,7 +468,7 @@ void createGraphicsPipeline() {
             .depthBiasEnable = VK_FALSE,
             .depthBiasConstantFactor = 0.f,
             .depthBiasClamp = 0.f,
-            .depthBiasSlopeFactor  =0.f
+            .depthBiasSlopeFactor = 0.f
     };
     VkPipelineMultisampleStateCreateInfo multisampleStateCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
@@ -731,11 +732,12 @@ void createDescriptorPool() {
                     .descriptorCount = imageCount
             }
     };
-    VkDescriptorPoolCreateInfo poolInfo = {};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 2;
-    poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = imageCount;
+    VkDescriptorPoolCreateInfo poolInfo = {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+            .poolSizeCount = 2,
+            .pPoolSizes = poolSizes,
+            .maxSets = imageCount
+    };
     CALL_VK(vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool));
 }
 
@@ -783,7 +785,8 @@ void createDescriptorSets() {
                            .descriptorCount = 1,
                            .pImageInfo = &imageInfo,
                    }};
-        vkUpdateDescriptorSets(device, 2, descriptorWrites, 0, nullptr);
+        vkUpdateDescriptorSets(device, sizeof(descriptorWrites) / sizeof(descriptorWrites[0]), descriptorWrites, 0,
+                               nullptr);
     }
 }
 
@@ -962,8 +965,17 @@ void createCommandBuffers() {
 //                       VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 //                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
         VkClearValue clearColor = {
-                .color.float32 = {0.0f, 0.34f, 0.90f, 1.0f}
+                .color.float32 = {0.0f, 0.0f, 1.0f, 1.0f}
         };
+        if (i == 1) {
+            clearColor.color = {
+                    .float32 = {1.0f, 0, 0, 1.0f}
+            };
+        } else if (i == 2) {
+            clearColor.color = {
+                    .float32 = {0.0f, 1.0f, 0, 1.0f}
+            };
+        }
         VkRenderPassBeginInfo renderPassBeginInfo = {
                 .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 .renderPass = renderPass,
@@ -990,6 +1002,9 @@ void createCommandBuffers() {
     }
 }
 
+/**
+ * create logical device
+ */
 void createDevice() {
     LOGD("createDevice");
     // enumerate devices
@@ -1076,8 +1091,8 @@ int findDeviceQueueFamily(VkPhysicalDevice device) {
     int i = 0;
     for (const auto &queueFamily: queueFamilies) {
         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            LOGI("found queue family at %d, queueCount=%d, queueFamilyCount=%d", i, queueFamily.queueCount,
-                 queueFamilyCount);
+            LOGI("found queue family at %d, queueCount=%d, queueFamilyCount=%d, queueFlags=%d",
+                 i, queueFamily.queueCount, queueFamilyCount, queueFamily.queueFlags);
             return i;
         }
     }
@@ -1129,7 +1144,7 @@ VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 }
 
 VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes) {
-    VkPresentModeKHR bestMode = VK_PRESENT_MODE_MAILBOX_KHR;
+    VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
     for (const auto &presentMode : availablePresentModes) {
         if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
             return presentMode;
@@ -1171,7 +1186,7 @@ void createSwapChain() {
             .minImageCount = details.capabilities.minImageCount,
             .imageFormat = surfaceFormat.format,
             .imageColorSpace = surfaceFormat.colorSpace,
-            .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+            .preTransform = details.capabilities.currentTransform,
             .imageArrayLayers = 1,
             .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
             .queueFamilyIndexCount = 1,
@@ -1254,23 +1269,15 @@ void setDebugCallback() {
     }
     VkDebugReportCallbackCreateInfoEXT createInfo = {
             .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
-            .flags = VK_DEBUG_REPORT_ERROR_BIT_EXT |
-                     VK_DEBUG_REPORT_WARNING_BIT_EXT |
-                     VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
+            .flags = VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT,
             .pNext = nullptr,
             .pfnCallback = DebugReportCallback,
             .pUserData = nullptr,
     };
     PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
-    PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
-
     vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)
             vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-    vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)
-            vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-
     assert(vkCreateDebugReportCallbackEXT);
-    assert(vkDestroyDebugReportCallbackEXT);
     CALL_VK(vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &debugReportCallback));
 }
 
@@ -1333,6 +1340,11 @@ void destroyVulkan() {
     vkDestroyDevice(device, nullptr);
 
 #ifdef ENABLE_VALIDATOR_LAYER
+    PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
+    vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)
+            vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+
+    assert(vkDestroyDebugReportCallbackEXT);
     vkDestroyDebugReportCallbackEXT(instance, debugReportCallback, nullptr);
 #endif
     vkDestroyInstance(instance, nullptr);
@@ -1349,7 +1361,7 @@ void cleanSwapChain() {
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     for (int i = 0; i < imageViews.size(); ++i) {
-        vkDestroyImageView(device, imageViews[0], nullptr);
+        vkDestroyImageView(device, imageViews[i], nullptr);
     }
     vkDestroySwapchainKHR(device, swapchain, nullptr);
 }

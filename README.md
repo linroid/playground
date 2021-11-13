@@ -1,2 +1,2 @@
-# Steps
- `2015.03.27`开始用GitHub来记录我在学习摸索过程中所做的一些练习^_^
+# Playground
+   This repository records a part of my practices when learning knowledge around computer science, started since `2015.03.27`

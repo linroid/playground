@@ -23,6 +23,7 @@ void process(const std::string &path_str) {
     auto source = instruction->Source();
     std::cout << "#" << std::setw(2) << std::setfill('0') << address << " " << machine_code << "\t(" << source << ")"
               << std::endl;
+    std::cout << machine_code << std::endl;
     output_file << machine_code << std::endl;
     address++;
   }

@@ -39,35 +39,38 @@ void init_led() {
 }
 
 void init_key() {
-  // General-Purpose I/O
-  P1SEL &= ~(1 << 2);
-  // Input direction
-  P1DIR &= ~(1 << 2);
-  // Pull Up/Down Mode
-  P1INP &= ~(1 << 2);
-  // Set Port 0 pull up mode
-  P2INP &= ~(1 << 6);
+  // Set P1ICONL 1
+  PICTL |= 1 << 1;
+  // Clear interrupt on port 1
+  P1IFG = 0;
+  // Allow interrupt on P1_2
+  P1IEN |= 1 << 2;
+  // Clera register
+  P1IF = 0;
+  // Allow all interrupt
+  EA = 1;
+  // Allow interrupt on port 1
+  IEN2 |= 1 << 4;
 }
 
-void init_interrupt() {
-  
+#pragma vector = P1INT_VECTOR
+__interrupt void handle_key() {
+  delay(10);
+  if (KEY == KEY_DOWN) {
+    DEBUG_LOG("Key Down\n");
+    LED = LED == LED_ON ? LED_OFF : LED_ON; 
+  }
+  P1IFG = 0;
+  P1IF = 0;
 }
 
 int main()
 {
   init_led();
   init_buzzer();
-  init_interrupt();
   init_key();
   while (true) {
-    if (KEY != KEY_DOWN) continue;
-    // Delay 10ms for debouncing
-    delay(10);
-    if (KEY != KEY_DOWN) continue;
-    DEBUG_LOG("Key Down\n");
-    while(KEY == KEY_DOWN);
-    DEBUG_LOG("Key Up\n");
-    LED = LED == LED_ON ? LED_OFF : LED_ON; 
+    delay(1000);
   }
   return 0;
 }

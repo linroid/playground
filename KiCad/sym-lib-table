@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Indcutor_MC")(type "KiCad")(uri "${KIPRJMOD}/Library/Indcutor_MC.kicad_sym")(options "")(descr ""))
+)

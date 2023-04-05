@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Inductor_MC")(type "KiCad")(uri "${KIPRJMOD}/Library/Inductor_MC.pretty")(options "")(descr ""))
+)

@@ -6,7 +6,7 @@
     (property "Value" "" (at -2.54 10.16 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "" (at -2.54 10.16 0)
+    (property "Footprint" "Inductor_MC:DRQ127-4R7-R" (at -2.54 10.16 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://www.eaton.com/content/dam/eaton/products/electronic-components/resources/data-sheet/eaton-drq-shielded-drum-core-power-inductors-data-sheet.pdf" (at 19.685 -14.351 0)
